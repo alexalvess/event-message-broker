@@ -42,11 +42,9 @@ async () => await Infrastructure.bindTopic('your-topic-name', 'your-queue-name')
 ### `Infrastructure.createQueue('queue-name')`
 Create a new SQS queue
 
-### `Infrastructure.createTopic('topic-name')`
-Create a new SNS topic
-
 ### `Infrastructure.bindTopic('topic-name', 'queue-name')`
-Subscribe a SNS topic in a SQS queue
+* Create a new SNS topic, if not exists
+* Subscribe a SNS topic in a SQS queue
 
 ### `Service.publishMessage('topic-name', {CONTENT})`
 Send a message to SNS topic to do broadcast

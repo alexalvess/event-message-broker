@@ -5,11 +5,8 @@ async function createQueue(queueName) {
     await sqsInfra.createQueue(queueName);
 }
 
-async function createTopic(topicName) {
-    await snsInfra.createTopic(topicName);
-}
-
 async function bindTopic(topicName, queueName) {
+    await snsInfra.createSnsTopic(topicName);
     await snsInfra.subscribeSnsTopicInQueue(topicName, queueName);
 }
 

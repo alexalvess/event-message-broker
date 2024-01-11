@@ -11,5 +11,5 @@ const Service = require('./services/service');
 
 module.exports = {
     Infrastructure,
-    Infrastructure
+    Service
 }
