@@ -6,10 +6,10 @@ aws.config.update({
     region: config.region,
 });
 
-const infra = require('./infrastructure/infra');
-const service = require('./services/service');
+const Infrastructure = require('./infrastructure/infra');
+const Service = require('./services/service');
 
 module.exports = {
-    infra,
-    service
+    Infrastructure,
+    Infrastructure
 }

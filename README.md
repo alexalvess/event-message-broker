@@ -30,9 +30,46 @@ You need to create a config.json file in your root/src project and input some AW
 **3. Sample Usage**
 
 ```javascript
-const messageBus = require('aws-message-bus-package');
+const { Infrastructure } = require('aws-message-bus-package');
 
-async () => await messageBus.infra.createQueue('your-queue-name');
-async () => await messageBus.infra.createTopic('your-topic-name');
-async () => await messageBus.infra.bindTopic('your-topic-name', 'your-queue-name');
+async () => await Infrastructure.createQueue('your-queue-name');
+async () => await Infrastructure.createTopic('your-topic-name');
+async () => await Infrastructure.bindTopic('your-topic-name', 'your-queue-name');
 ```
+
+## API
+
+### `Infrastructure.createQueue('queue-name')`
+Create a new SQS queue
+
+### `Infrastructure.createTopic('topic-name')`
+Create a new SNS topic
+
+### `Infrastructure.bindTopic('topic-name', 'queue-name')`
+Subscribe a SNS topic in a SQS queue
+
+### `Service.publishMessage('topic-name', {CONTENT})`
+Send a message to SNS topic to do broadcast
+* Content: any kind of type/object, this will be transformed into a JSON format
+
+### `Service.sendMessage('queue-name', {CONTENT}, {PARAMS})`
+Send a message to SQS queue direct
+
+* Content: any kind of type/object, this will be transformed into a JSON format
+* Params: [SQS.Types.SendMessageRequest](https://github.com/aws/aws-sdk-js/blob/7bcd9ab0d0b623ac99730a051a9758068910e9b3/clients/sqs.d.ts#L751)
+    * **You don't need to inform:**
+        * MessageBody
+        * MessageAttributes
+        * QueueUrl
+
+### `Service.scheduleMessage('topic-name', {CONTENT}, [SCHEDULED_DATE])`
+Send a message to EventBridge informing the SNS topic with the destination. This message will be consumed when it arrives on the scheduled date.
+
+* Content: any kind of type/object, this will be transformed into a JSON format
+
+### `Service.handleConsumerMessage('queue-name', {RESILIENCE_PARAMS})`
+Handle a consumer to consume queue messages
+
+* Resilience Params:
+    * maxRetryCount: max number of attempts until send to DLQ
+    * delaySeconds: the time that will wait between attempts
