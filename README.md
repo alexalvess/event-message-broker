@@ -32,7 +32,7 @@ You need to create a config.json file in your root/src project and input some AW
 ```javascript
 const messageBus = require('aws-message-bus-package');
 
-await messageBus.sqsInfra.createQueue('your-queue-name');
-await messageBus.snsInfra.createSnsTopic('your-topic-name');
-await messageBus.snsInfra.subscribeSnsTopicInQueue('your-topic-name', 'your-queue-name');
+async () => await messageBus.infra.createQueue('your-queue-name');
+async () => await messageBus.infra.createTopic('your-topic-name');
+async () => await messageBus.infra.bindTopic('your-topic-name', 'your-queue-name');
 ```
