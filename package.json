@@ -1,6 +1,6 @@
 {
   "name": "aws-message-bus-package",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "src/index.js",
   "scripts": {
@@ -8,6 +8,10 @@
   },
   "author": "Alex Alves",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "directory": "https://github.com/alexalvess/aws-message-bus-package"
+  },
   "dependencies": {
     "aws-sdk": "^2.1531.0",
     "sqs-consumer": "^8.1.3",
