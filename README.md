@@ -4,6 +4,7 @@
 
 ## Table of Contents
 * [Getting Started](#getting-Started)
+* [API](#api)
 
 ## Getting Started
 
