@@ -22,7 +22,11 @@
   },
   "keywords": [
     "message bus",
+    "bus",
     "message broker",
+    "broker",
+    "message",
+    "event",
     "aws",
     "amazon",
     "sqs",
