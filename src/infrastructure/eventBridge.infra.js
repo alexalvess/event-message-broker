@@ -11,8 +11,7 @@ async function createRule(scheduleDate) {
     await eventBridge.putRule({
         Name: id,
         ScheduleExpression: `rate(${scheduleMinutes} minute${scheduleMinutes > 1 ? 's' : ''})`,
-        State: 'ENABLED',
-        Tags: config.tags
+        State: 'ENABLED'
     }).promise();
 
     return id;
