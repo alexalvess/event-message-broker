@@ -5,8 +5,9 @@ const sns = new aws.SNS();
 
 async function createSnsTopic(topicName) {
     try {
-        await sns.createTopic({ Name: topicName }).promise();
-        console.log('Topic created successfully:', topicName);
+        const result = await sns.createTopic({ Name: topicName }).promise();
+        console.log('Topic created successfully:', result.TopicArn);
+        return result.TopicArn;
     } catch (error) {
         console.error('Erro when try to create a topic:', error.message);
     }    
