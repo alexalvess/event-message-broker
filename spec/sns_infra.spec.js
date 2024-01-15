@@ -1,11 +1,10 @@
-const config = require('./config.json');
+const config = require('../src/config.json');
+const AWS = require('aws-sdk');
 
-let AWS;
 let snsSpy;
 
 describe('SNS infrastructure tests', () => {
     beforeAll(() => {
-        AWS = require('aws-sdk');
         snsSpy = jasmine.createSpyObj('AWS.SNS', ['createTopic', 'subscribe']);
         spyOn(AWS, 'SNS').and.returnValue(snsSpy);
     })

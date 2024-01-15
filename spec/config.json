@@ -1,7 +1,0 @@
-{
-    "endpoint": "http://localhost:4566",
-    "region": "eu-west-2",
-    "snsArnPrefix": "arn:aws:sns:eu-west-2:000000000000",
-    "sqsArnPrefix": "arn:aws:sqs:eu-west-2:000000000000",
-    "queuUrlPrefix": "http://sqs.eu-west-2.localhost.localstack.cloud:4566/000000000000"
-}
