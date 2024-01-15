@@ -10,13 +10,16 @@ async function createRule(scheduleDate) {
     const subtractDates = Math.abs(scheduleDate - new Date());
     const scheduleMinutes = Math.floor((subtractDates/1000)/60);
 
-    await eventBridge.putRule({
+    const rule = await eventBridge.putRule({
         Name: id,
         ScheduleExpression: `rate(${scheduleMinutes} minute${scheduleMinutes > 1 ? 's' : ''})`,
         State: 'ENABLED'
     }).promise();
 
-    return id;
+    return {
+        id: id,
+        rulearn: rule.RuleArn
+    };
 }
 
 module.exports = { createRule }
