@@ -12,6 +12,5 @@ async function bindTopic(topicName, queueName) {
 
 module.exports = {
     createQueue,
-    createTopic,
     bindTopic
 }
