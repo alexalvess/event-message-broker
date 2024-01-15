@@ -1,30 +1,23 @@
 const aws = require('aws-sdk');
-const uuid = require('uuid');
 const config = require('../config.json');
+
+const { createRule } = require('../infrastructure/eventBridge.infra');
 
 const eventBridge = new aws.EventBridge();
 
 async function scheduleMessage(topicName, message, scheduleDate) {
     const topicArn = `${config.snsArnPrefix}:${topicName}`;
-    const id = uuid.v4();
 
-    const subtractDates = Math.abs(scheduleDate - new Date());
-    const scheduleMinutes = Math.floor((subtractDates/1000)/60);
-
-    await eventBridge.putRule({
-        Name: id,
-        ScheduleExpression: `rate(${scheduleMinutes} minute${scheduleMinutes > 1 ? 's' : ''})`,
-        State: 'ENABLED'
-    }).promise();
+    const scheduleId = await createRule(scheduleDate);
 
     await eventBridge.putTargets({
-        Rule: id,
+        Rule: scheduleId,
         Targets: [
             {
                 Id: id,
                 Arn: topicArn,
                 Input: JSON.stringify({
-                    scheduleId: id,
+                    scheduleId: scheduleId,
                     ...message
                 })
             }
@@ -34,13 +27,13 @@ async function scheduleMessage(topicName, message, scheduleDate) {
     await eventBridge.putEvents({
         Entries: [
             {
-                Source: id,
+                Source: scheduleId,
                 DetailType: 'planner'
             }
         ],
     }).promise();
 
-    console.log('\x1b[32m%s\x1b[0m', `Schedule message ${topicName} to ${scheduleDate.toLocaleString()} (${scheduleMinutes} minutes):`, id);
+    console.log('\x1b[32m%s\x1b[0m', `Schedule message ${topicName} to ${scheduleDate.toLocaleString()}`, scheduleId);
 }
 
 async function deleteEventBridgeRule(queueName, ruleName) {
