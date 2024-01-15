@@ -1,4 +1,4 @@
-const config = require('../src/config.json');
+const config = require('../../src/config.json');
 const AWS = require('aws-sdk');
 
 let snsSpy;
@@ -16,7 +16,7 @@ describe('SNS infrastructure tests', () => {
             promise: () => Promise.resolve({ TopicArn: `${config.snsArnPrefix}:${topicName}` })
         });
 
-        const { createSnsTopic } = require('../src/infrastructure/sns.infra');
+        const { createSnsTopic } = require('../../src/infrastructure/sns.infra');
 
         const result = await createSnsTopic(topicName);
 
@@ -32,7 +32,7 @@ describe('SNS infrastructure tests', () => {
             promise: () => Promise.resolve({ SubscriptionArn: `${config.snsArnPrefix}:${topicName}:b6f5e924-dbb3-41c9-aa3b-589dbae0cfff` })
         });
 
-        const { subscribeSnsTopicInQueue } = require('../src/infrastructure/sns.infra');
+        const { subscribeSnsTopicInQueue } = require('../../src/infrastructure/sns.infra');
 
         const result = await subscribeSnsTopicInQueue(topicName, queueName);
 
