@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "jasmine 'test/unitTest/**/*.spec.js'"
+    "test": "jasmine --config=jasmine.json"
   },
   "author": {
     "name": "Alex Alves",
@@ -35,6 +35,7 @@
     "eventBridge"
   ],
   "devDependencies": {
-    "jasmine": "^5.1.0"
+    "jasmine": "^5.1.0",
+    "testcontainers": "^10.5.0"
   }
 }

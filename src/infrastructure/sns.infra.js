@@ -10,6 +10,7 @@ async function createSnsTopic(topicName) {
         return result.TopicArn;
     } catch (error) {
         console.error('Erro when try to create a topic:', error.message);
+        throw error;
     }    
 }
 
@@ -26,6 +27,7 @@ async function subscribeSnsTopicInQueue(topicName, queueName) {
         return subscriber.SubscriptionArn;
     } catch (error) {
         console.error('Error to create a subscriber:', error.message);
+        throw error;
     }
 }
 
