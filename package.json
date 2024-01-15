@@ -32,5 +32,8 @@
     "sqs",
     "sns",
     "eventBridge"
-  ]
+  ],
+  "devDependencies": {
+    "jasmine": "^5.1.0"
+  }
 }
