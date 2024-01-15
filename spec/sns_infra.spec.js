@@ -2,15 +2,6 @@ const AWS = require('aws-sdk');
 const config = require('./config.json');
 
 describe('SNS infrastructure tests', () => {
-    beforeEach(() => {
-        AWS.config.update({
-            accessKeyId: '0000000000',
-            secretAccessKey: '0000000000',
-            endpoint: config.endpoint,
-            region: config.region,
-        });
-    });
-
     it('Should be create SNS topic', async () => {
         const topicName = 'test-topic';
         
