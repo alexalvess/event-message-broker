@@ -14,7 +14,8 @@ async function scheduleMessage(topicName, message, scheduleDate) {
     await eventBridge.putRule({
         Name: id,
         ScheduleExpression: `rate(${scheduleMinutes} minute${scheduleMinutes > 1 ? 's' : ''})`,
-        State: 'ENABLED'
+        State: 'ENABLED',
+        Tags: config.tags
     }).promise();
 
     await eventBridge.putTargets({
