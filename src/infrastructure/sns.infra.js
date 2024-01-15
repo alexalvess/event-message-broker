@@ -23,6 +23,7 @@ async function subscribeSnsTopicInQueue(topicName, queueName) {
     try {
         const subscriber = await sns.subscribe(params).promise();
         console.log('Subscriber created:', subscriber.SubscriptionArn);
+        return subscriber.SubscriptionArn;
     } catch (error) {
         console.error('Error to create a subscriber:', error.message);
     }
