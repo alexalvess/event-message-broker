@@ -1,39 +1,45 @@
-const aws = require('aws-sdk');
+const { EventBridge } = require('aws-sdk');
 const config = require('../config.json');
 
 const { createRule } = require('../infrastructure/eventBridge.infra');
 
-const eventBridge = new aws.EventBridge();
+const eventBridge = new EventBridge();
 
 async function scheduleMessage(topicName, message, scheduleDate) {
     const topicArn = `${config.snsArnPrefix}:${topicName}`;
 
-    const scheduleId = await createRule(scheduleDate);
+    const rule = await createRule(scheduleDate);
 
-    await eventBridge.putTargets({
-        Rule: scheduleId,
+    const targets = await eventBridge.putTargets({
+        Rule: rule.id,
         Targets: [
             {
-                Id: id,
+                Id: rule.id,
                 Arn: topicArn,
                 Input: JSON.stringify({
-                    scheduleId: scheduleId,
+                    scheduleId: rule.id,
                     ...message
                 })
             }
         ],
     }).promise();
 
-    await eventBridge.putEvents({
+    const events = await eventBridge.putEvents({
         Entries: [
             {
-                Source: scheduleId,
+                Source: rule.id,
                 DetailType: 'planner'
             }
         ],
     }).promise();
 
-    console.log('\x1b[32m%s\x1b[0m', `Schedule message ${topicName} to ${scheduleDate.toLocaleString()}`, scheduleId);
+    console.log('\x1b[32m%s\x1b[0m', `Message ${rule.id} scheduled`);
+    
+    return {
+        ...rule,
+        targets: { ...targets },
+        events: { ...events }
+    }
 }
 
 async function deleteEventBridgeRule(queueName, ruleName) {
