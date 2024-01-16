@@ -1,14 +1,15 @@
-const aws = require('aws-sdk');
+const { EventBridge } = require('aws-sdk');
 const uuid = require('uuid');
 const config = require('../config.json');
 
-const eventBridge = new aws.EventBridge();
+const eventBridge = new EventBridge();
 
 async function createRule(scheduleDate) {
     const id = uuid.v4();
 
     const subtractDates = Math.abs(scheduleDate - new Date());
-    const scheduleMinutes = Math.floor((subtractDates/1000)/60);
+    let scheduleMinutes = Math.floor((subtractDates/1000)/60);
+    scheduleMinutes = scheduleMinutes == 0 ? 1 : scheduleMinutes;
 
     const rule = await eventBridge.putRule({
         Name: id,
@@ -16,9 +17,11 @@ async function createRule(scheduleDate) {
         State: 'ENABLED'
     }).promise();
 
+    console.log(`Rule ${id} - ${rule.RuleArn} CREATED`);
+
     return {
         id: id,
-        rulearn: rule.RuleArn
+        ruleArn: rule.RuleArn
     };
 }
 

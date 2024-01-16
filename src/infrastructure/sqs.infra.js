@@ -1,7 +1,7 @@
-const aws = require('aws-sdk');
+const { SQS } = require('aws-sdk');
 const config = require('../config.json');
 
-const sqs = new aws.SQS();
+const sqs = new SQS();
 
 async function createQueue(queueName) {
   try {
