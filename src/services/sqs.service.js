@@ -1,9 +1,9 @@
-const aws = require('aws-sdk');
+const { SQS } = require('aws-sdk');
 const config = require('../config.json');
 const { Consumer } = require('sqs-consumer');
 const eventBridgeService = require('./eventBridge.service');
 
-const sqs = new aws.SQS();
+const sqs = new SQS();
 
 function sendMessageQueue(queueName, contentMessage, sendParams) {
     const params = {
