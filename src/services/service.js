@@ -7,7 +7,7 @@ async function publishMessage(topicName, contentMessage) {
 }
 
 async function sendMessage(queueName, contentMessage, params) {
-    sqsService.sendMessageQueue(queueName, contentMessage, params);
+    await sqsService.sendMessageQueue(queueName, contentMessage, params);
 }
 
 async function scheduleMessage(topicName, message, scheduleDate) {

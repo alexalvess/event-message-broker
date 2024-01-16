@@ -6,7 +6,7 @@ describe('SQS infrastructure tests', () => {
     beforeAll(async () => await configureContainer('sns'));
     afterAll(async () => await stopContainer());
 
-    it('Publish to unexist SNS topic', async () => {
+    it('Send to unexist SQS queue', async () => {
         const topicName = 'my-test-topic';
         const message = { message: 'test' }
 

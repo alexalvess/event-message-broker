@@ -5,7 +5,7 @@ const eventBridgeService = require('./eventBridge.service');
 
 const sqs = new SQS();
 
-function sendMessageQueue(queueName, contentMessage, sendParams) {
+async function sendMessageQueue(queueName, contentMessage, sendParams) {
     const params = {
         MessageBody: JSON.stringify(contentMessage),
         MessageAttributes: {
@@ -18,13 +18,13 @@ function sendMessageQueue(queueName, contentMessage, sendParams) {
         ...sendParams
     };
 
-    sqs.sendMessage(params, (err, data) => {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log('\x1b[33m%s\x1b[0m', `Sent SQS message to ${queueName}: `, data.MessageId);
-        }
-    });
+    try {
+        const data = await sqs.sendMessage(params).promise();
+        console.log('\x1b[33m%s\x1b[0m', `Sent SQS message to ${queueName}: `, data.MessageId);
+        return data.MessageId;
+    } catch (error) {
+        console.log('Error to send message', error.message);
+    }
 }
 
 async function consumeMessages(queueName, resilienceParams) {
