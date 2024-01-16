@@ -1,7 +1,7 @@
-const aws = require('aws-sdk');
+const { SNS } = require('aws-sdk');
 const config = require('../config.json');
 
-const sns = new aws.SNS();
+const sns = new SNS();
 
 function publishMessage(topicName, contentMessage) {
     const params = {
