@@ -14,7 +14,7 @@ async function publishMessage(topicName, contentMessage) {
         console.log('\x1b[33m%s\x1b[0m', 'Message published:', published.MessageId);
         return published.MessageId;
     } catch (error) {
-        console.error('Error to publish in a topic:', err);
+        console.error('Error to publish in a topic:', error.message);
     }
 }
 
