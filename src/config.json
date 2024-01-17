@@ -7,14 +7,8 @@
     "sqsArn": "arn:aws:sqs",
     "awsHost": "localhost.localstack.cloud",
     "tags": [
-        {
-            "Key": "team",
-            "Value": "your-team-name"
-        },
-        {
-            "Key": "appName",
-            "Value": "your-app-name"
-        }
+        { "Key": "team", "Value": "your-team-name" },
+        { "Key": "appName", "Value": "your-app-name" }
     ],
     "testMode": false
 }
