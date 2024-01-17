@@ -1,21 +1,21 @@
-const aws = require('aws-sdk');
+const { SNS } = require('aws-sdk');
 const config = require('../config.json');
 
-const sns = new aws.SNS();
+const sns = new SNS();
 
-function publishMessage(topicName, contentMessage) {
+async function publishMessage(topicName, contentMessage) {
     const params = {
-        TopicArn: `${config.snsArnPrefix}:${topicName}`,
+        TopicArn: `${config.snsArn}:${config.region}:${config.account}:${topicName}`,
         Message: JSON.stringify(contentMessage),
     };
 
-    sns.publish(params, (err, data) => {
-        if (err) {
-            console.error('Error to publish in a topic:', err);
-        } else {
-            console.log('\x1b[33m%s\x1b[0m', 'Message published:', data.MessageId);
-        }
-    });
+    try {
+        const published = await sns.publish(params).promise();
+        console.log('\x1b[33m%s\x1b[0m', 'Message published:', published.MessageId);
+        return published.MessageId;
+    } catch (error) {
+        console.error('Error to publish in a topic:', error.message);
+    }
 }
 
 module.exports = { publishMessage }

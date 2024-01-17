@@ -3,11 +3,11 @@ const sqsService = require('./sqs.service');
 const eventBridgeService = require('./eventBridge.service');
 
 async function publishMessage(topicName, contentMessage) {
-    snsService.publishMessage(topicName, contentMessage);
+    await snsService.publishMessage(topicName, contentMessage);
 }
 
 async function sendMessage(queueName, contentMessage, params) {
-    sqsService.sendMessageQueue(queueName, contentMessage, params);
+    await sqsService.sendMessageQueue(queueName, contentMessage, params);
 }
 
 async function scheduleMessage(topicName, message, scheduleDate) {
