@@ -1,7 +1,7 @@
 {
   "spec_dir": "test",
   "spec_files": [
-    "integrationTest/infrastructures/sns.infra.spec.js"
+    "integrationTest/**/*[sS]pec.?(m)js"
   ],
   "env": {
     "failSpecWithNoExpectations": true,    
