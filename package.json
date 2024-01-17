@@ -5,7 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "jasmine --config=jasmine.json"
+    "test": "jasmine --config=jasmine.json",
+    "version": "npm-version-up",
+    "postversion": "git push && git push --tags"
   },
   "author": {
     "name": "Alex Alves",
@@ -23,6 +25,7 @@
   },
   "devDependencies": {
     "jasmine": "^5.1.0",
+    "npm-version-up": "^0.1.7",
     "testcontainers": "^10.5.0"
   },
   "keywords": [
