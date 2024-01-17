@@ -21,9 +21,6 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
-    - name: Bump Version
-      run: npm version patch
-
     - name: Publish to NPM
       run: npm publish --access public
       env:
