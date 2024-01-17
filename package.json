@@ -1,13 +1,13 @@
 {
   "name": "aws-message-bus-package",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "test": "jasmine --config=jasmine.json",
     "version": "npm-version-up",
-    "postversion": "git commit -am 'chore: bump version' && git push && git push --tags"
+    "postversion": "git commit -am 'chore: bump version' && git push"
   },
   "author": {
     "name": "Alex Alves",
