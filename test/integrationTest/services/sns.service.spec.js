@@ -2,7 +2,7 @@ const { configureContainer, stopContainer } = require('../bootstrap/aws.service.
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100_000;
 
-describe('SNS infrastructure tests', () => {
+describe('SNS service tests', () => {
     beforeAll(async () => await configureContainer('sns'));
     afterAll(async () => await stopContainer());
 

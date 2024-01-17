@@ -1,32 +1,30 @@
 const { configureContainer, stopContainer } = require('../bootstrap/aws.service.config');
+const { SQS } = require('aws-sdk');
+const config = require('../../../src/config.json')
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100_000;
 
-describe('SQS infrastructure tests', () => {
-    beforeAll(async () => await configureContainer('sns'));
+describe('SQS service tests', () => {
+    beforeAll(async () => await configureContainer('sqs'));
     afterAll(async () => await stopContainer());
 
-    it('Send to unexist SQS queue', async () => {
-        const topicName = 'my-test-topic';
+    it('Send to exist SQS queue', async () => {
+        const queueName = 'myTestQueue';
         const message = { message: 'test' }
 
-        const { publishMessage } = require('../../../src/services/sns.service');
+        const { createQueue } = require('../../../src/infrastructure/sqs.infra');
+        // const { sendMessageQueue } = require('../../../src/services/sqs.service');
 
-        const result = await publishMessage(topicName, message);
+        const queues = await createQueue(queueName);
 
-        expect(result).toBeUndefined();
-    });
+        const temp = await new SQS().sendMessage({
+            QueueUrl: config.queuUrlPrefix.replace('[REGION]', config.region).replace('[PORT]', config.port),
+            MessageBody: 'test'
+        }).promise();
 
-    it('Publish to exist SNS topic', async () => {
-        const topicName = 'my-test-topic';
-        const message = { message: 'test' }
+        console.log(temp);
+        // await sendMessageQueue(queueName, message);
 
-        const { createSnsTopic } = require('../../../src/infrastructure/sns.infra');
-        const { publishMessage } = require('../../../src/services/sns.service');
-
-        await createSnsTopic(topicName);
-        const result = await publishMessage(topicName, message);
-
-        expect(result).not.toBeUndefined();
+        expect(temp).not.toBeUndefined();
     });
 })
