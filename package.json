@@ -7,7 +7,7 @@
     "start": "node src/index.js",
     "test": "jasmine --config=jasmine.json",
     "version": "npm-version-up",
-    "postversion": "git commit -am 'chore: bump version' && git push"
+    "postversion": "git add . && git commit -am 'chore: bump version' && git push"
   },
   "author": {
     "name": "Alex Alves",
