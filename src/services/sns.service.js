@@ -5,7 +5,7 @@ const sns = new SNS();
 
 async function publishMessage(topicName, contentMessage) {
     const params = {
-        TopicArn: `${config.snsArnPrefix}:${topicName}`,
+        TopicArn: `${config.snsArn}:${config.region}:${config.account}:${topicName}`,
         Message: JSON.stringify(contentMessage),
     };
 

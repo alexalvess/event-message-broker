@@ -2,7 +2,7 @@ const aws = require('aws-sdk');
 const config = require('./config.json');
 
 aws.config.update({
-    endpoint: config.endpoint,
+    endpoint: `http://${config.host}:${config.port}`,
     region: config.region,
 });
 

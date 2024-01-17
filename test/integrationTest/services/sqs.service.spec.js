@@ -8,23 +8,49 @@ describe('SQS service tests', () => {
     beforeAll(async () => await configureContainer('sqs'));
     afterAll(async () => await stopContainer());
 
+    it('Send to unexist SQS queue', async () => {
+        const queueName = 'my-test-queue';
+        const message = { message: 'test' }
+
+        const { sendMessageQueue } = require('../../../src/services/sqs.service');
+
+        const result = await sendMessageQueue(queueName, message);
+
+        expect(result).toBeUndefined();
+    });
+
     it('Send to exist SQS queue', async () => {
-        const queueName = 'myTestQueue';
+        const queueName = 'my-test-queue';
         const message = { message: 'test' }
 
         const { createQueue } = require('../../../src/infrastructure/sqs.infra');
-        // const { sendMessageQueue } = require('../../../src/services/sqs.service');
+        const { sendMessageQueue } = require('../../../src/services/sqs.service');
+
+        await createQueue(queueName);
+        const result = await sendMessageQueue(queueName, message);
+
+        expect(result).not.toBeUndefined();
+    });
+
+    it('Consume a message in SQS queue', async () => {
+        const queueName = 'my-test-queue';
+        const message = { message: 'test' }
+
+        const { createQueue } = require('../../../src/infrastructure/sqs.infra');
+        const { sendMessageQueue, consumeMessages } = require('../../../src/services/sqs.service');
 
         const queues = await createQueue(queueName);
+        const result = await sendMessageQueue(queueName, message);
 
-        const temp = await new SQS().sendMessage({
-            QueueUrl: config.queuUrlPrefix.replace('[REGION]', config.region).replace('[PORT]', config.port),
-            MessageBody: 'test'
-        }).promise();
+        expect(result).toBeDefined();
 
-        console.log(temp);
-        // await sendMessageQueue(queueName, message);
+        consumeMessages(
+            queueName, 
+            { maxRetryCount: 3, delaySeconds: 5 },
+            (message) => {
+                expect(message).toBeDefined();
+            });
 
-        expect(temp).not.toBeUndefined();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
     });
 })

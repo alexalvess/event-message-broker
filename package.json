@@ -18,8 +18,12 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1531.0",
-    "sqs-consumer": "^8.1.3",
+    "sqs-consumer": "^5.8.0",
     "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "jasmine": "^5.1.0",
+    "testcontainers": "^10.5.0"
   },
   "keywords": [
     "message bus",
@@ -33,9 +37,5 @@
     "sqs",
     "sns",
     "eventBridge"
-  ],
-  "devDependencies": {
-    "jasmine": "^5.1.0",
-    "testcontainers": "^10.5.0"
-  }
+  ]
 }

@@ -11,8 +11,11 @@ async function configureContainer(services) {
         .withWaitStrategy(Wait.forLogMessage('Ready.'))
         .start();
 
+    config.port = container.getMappedPort(4566);
+    config.host = container.getHost();
+
     AWS.config.update({
-        endpoint: `http://${container.getHost()}:${container.getMappedPort(4566)}`,
+        endpoint: `http://${config.host}:${config.port}`,
         region: config.region,
     });
 }

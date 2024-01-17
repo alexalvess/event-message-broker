@@ -16,8 +16,8 @@ async function createSnsTopic(topicName) {
 async function subscribeSnsTopicInQueue(topicName, queueName) {
     const params = {
         Protocol: 'sqs',
-        TopicArn: `${config.snsArnPrefix}:${topicName}`,
-        Endpoint: `${config.sqsArnPrefix}:${queueName}`,
+        TopicArn: `${config.snsArn}:${config.region}:${config.account}:${topicName}`,
+        Endpoint: `${config.sqsArn}:${config.region}:${config.account}:${queueName}`,
     };
 
     try {

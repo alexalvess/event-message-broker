@@ -6,7 +6,7 @@ const { createRule } = require('../infrastructure/eventBridge.infra');
 const eventBridge = new EventBridge();
 
 async function scheduleMessage(topicName, message, scheduleDate) {
-    const topicArn = `${config.snsArnPrefix}:${topicName}`;
+    const topicArn = `${config.snsArn}:${config.region}:${config.account}:${topicName}`;
 
     const rule = await createRule(scheduleDate);
 
