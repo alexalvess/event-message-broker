@@ -22,7 +22,7 @@ jobs:
       run: npm install
 
     - name: Print Token
-      run: echo "${{ secrets.NPM_AUTH_TOKEN }}"
+      run: echo "${{ secrets.NPM_AUTH_TOKEN }}" 
 
     - name: Publish to NPM
       uses: JS-DevTools/npm-publish@v3
