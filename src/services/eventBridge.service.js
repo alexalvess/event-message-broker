@@ -1,6 +1,6 @@
 const { EventBridge } = require('aws-sdk');
 const config = require('../config.json');
-
+const { logInformation, logError } = require('../utils/log');
 const { createRule } = require('../infrastructure/eventBridge.infra');
 
 const eventBridge = new EventBridge();
@@ -33,7 +33,7 @@ async function scheduleMessage(topicName, message, scheduleDate) {
         ],
     }).promise();
 
-    console.log('\x1b[32m%s\x1b[0m', `Message ${rule.id} scheduled`);
+    logInformation(`Message ${rule.id} scheduled`);
     
     return {
         ...rule,
@@ -46,9 +46,9 @@ async function deleteEventBridgeRule(queueName, ruleName) {
     try {
         await eventBridge.removeTargets({ Rule: ruleName, Ids: [ruleName] }).promise();
         await eventBridge.deleteRule({ Name: ruleName }).promise();
-        console.log('\x1b[35m%s\x1b[0m' ,`Deleting schedule rule from ${queueName}:`, ruleName);
+        logInformation(`Deleting schedule rule from ${queueName}:`, ruleName);
     } catch (error) {
-        console.log('\x1b[104m%s\x1b[0m', `Error trying delete rule from ${queueName}`, error.message)   
+        logError(`Error trying delete rule from ${queueName}`, error.message)   
     }
 }
 

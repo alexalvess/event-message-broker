@@ -1,5 +1,6 @@
 const { SNS } = require('aws-sdk');
 const config = require('../config.json');
+const { logInformation, logError } = require('../utils/log');
 
 const sns = new SNS();
 
@@ -11,10 +12,10 @@ async function publishMessage(topicName, contentMessage) {
 
     try {
         const published = await sns.publish(params).promise();
-        console.log('\x1b[33m%s\x1b[0m', 'Message published:', published.MessageId);
+        logInformation('\x1b[33m%s\x1b[0m', 'Message published:', published.MessageId);
         return published.MessageId;
     } catch (error) {
-        console.error('Error to publish in a topic:', error.message);
+        logError('Error to publish in a topic:', error.message);
     }
 }
 

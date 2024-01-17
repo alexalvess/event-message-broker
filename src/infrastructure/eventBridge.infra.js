@@ -1,6 +1,6 @@
 const { EventBridge } = require('aws-sdk');
 const uuid = require('uuid');
-const config = require('../config.json');
+const { logInformation } = require('../utils/log');
 
 const eventBridge = new EventBridge();
 
@@ -17,8 +17,8 @@ async function createRule(scheduleDate) {
         State: 'ENABLED'
     }).promise();
 
-    console.log(`Rule ${id} - ${rule.RuleArn} CREATED`);
-
+    logInformation(`Rule created`, rule.RuleArn);
+    
     return {
         id: id,
         ruleArn: rule.RuleArn

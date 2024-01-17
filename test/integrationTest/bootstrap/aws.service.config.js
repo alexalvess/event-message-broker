@@ -5,6 +5,8 @@ const AWS = require('aws-sdk');
 let container;
 
 async function configureContainer(services) {
+    config.testMode = true;
+
     container = await new GenericContainer('localstack/localstack')
         .withExposedPorts(4566)
         .withEnvironment({ SERVICES: services })
@@ -21,6 +23,7 @@ async function configureContainer(services) {
 }
 
 async function stopContainer() {
+    config.testMode = false;
     if(container) {
         await container.stop();
     }

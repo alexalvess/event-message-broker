@@ -2,6 +2,7 @@ const { SQS } = require('aws-sdk');
 const config = require('../config.json');
 const { Consumer } = require('sqs-consumer');
 const eventBridgeService = require('./eventBridge.service');
+const { logInformation, logError, logWarning } = require('../utils/log');
 
 const sqs = new SQS();
 
@@ -20,10 +21,10 @@ async function sendMessageQueue(queueName, contentMessage, sendParams) {
 
     try {
         const data = await sqs.sendMessage(params).promise();
-        console.log('\x1b[33m%s\x1b[0m', `Sent SQS message to ${queueName}: `, data.MessageId);
+        logInformation(`Sent SQS message to ${queueName}: `, data.MessageId);
         return data.MessageId;
     } catch (error) {
-        console.log('Error to send message', error.message);
+        logError('Error to send message', error.message);
     }
 }
 
@@ -45,9 +46,9 @@ async function consumeMessages(queueName, resilienceParams, handle) {
 
                 handle(messageContent);
 
-                console.info('\x1b[36m%s\x1b[0m', `Message consumed from ${queueName}`);
+                logInformation(`Message consumed from ${queueName}`);
             } catch (error) {
-                console.log('\x1b[31m%s\x1b[0m', `Error processing message from ${queueName}:`, error.message);
+                logError(`Error processing message from ${queueName}:`, error.message);
                 executeSecondLevelResilience(queueName, message, resilienceParams.maxRetryCount, resilienceParams.delaySeconds);
             }
         },
@@ -62,7 +63,7 @@ function executeSecondLevelResilience(queueName, message, maxRetryCount, delaySe
     let retryCount = message.MessageAttributes && parseInt(message.MessageAttributes['RetryCount'].StringValue);
     
     if (retryCount <= maxRetryCount) {
-        console.log(`Retry count: ${retryCount}`);
+        logWarning(`Retry count: ${retryCount}`);
         sendMessageQueue(queueName, message.Body, {
             DelaySeconds: delaySeconds,
             MessageAttributes: {
