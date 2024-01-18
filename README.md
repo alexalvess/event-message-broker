@@ -20,11 +20,18 @@ You need to create a config.json file in your root/src project and input some AW
 
 ```json
 {
-    "endpoint": "http://localhost:4566",
+    "host": "localhost",
+    "port": 4566,
     "region": "eu-west-2",
-    "snsArnPrefix": "arn:aws:sns:eu-west-2:000000000000",
-    "sqsArnPrefix": "arn:aws:sqs:eu-west-2:000000000000",
-    "queuUrlPrefix": "http://sqs.eu-west-2.localhost.localstack.cloud:4566/000000000000"
+    "account": "000000000000",
+    "snsArn": "arn:aws:sns",
+    "sqsArn": "arn:aws:sqs",
+    "awsHost": "localhost.localstack.cloud",
+    "tags": [
+        { "Key": "team", "Value": "your-team-name" },
+        { "Key": "appName", "Value": "your-app-name" }
+    ],
+    "testMode": false
 }
 ```
 
