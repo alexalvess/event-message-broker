@@ -29,7 +29,7 @@ export async function sendMessageQueue(queueName: string, contentMessage: any, s
     }
 }
 
-export async function consumeMessages(queueName: string, resilienceParams: any, handle: any) {
+export async function consumeMessages(queueName: string, resilienceParams: any, handle?: any) {
     const consumer = Consumer.create({
         messageAttributeNames: [ 'All' ],
         queueUrl: `http://sqs.${config.region}.${config.awsHost}:${config.port}/${config.account}/${queueName}`,
