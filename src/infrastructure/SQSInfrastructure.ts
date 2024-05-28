@@ -2,7 +2,8 @@ import {
     SQSClient,
     SetQueueAttributesCommand,
     ListQueuesCommand,
-    CreateQueueCommand
+    CreateQueueCommand,
+    TagQueueCommand
 } from "@aws-sdk/client-sqs";
 
 import {
@@ -10,7 +11,11 @@ import {
     QUEUE_URL_TEMPLATE,
     TOPIC_ARN_TEMPLATE
 } from "../utils/constants";
-import { CreateQueueOutput } from "../utils/types";
+
+import { 
+    CreateQueueOutput, 
+    TagsResourceInput 
+} from "../utils/types";
 
 export class SQSInfrastructure {
     private readonly client: SQSClient;
@@ -19,10 +24,10 @@ export class SQSInfrastructure {
         this.client = new SQSClient();
     }
 
-    public async create(queueName: string): Promise<CreateQueueOutput> {
+    public async create(queueName: string, tags: TagsResourceInput): Promise<CreateQueueOutput> {
         const exists = await this.check(queueName);
 
-        if(!exists) {
+        if (!exists) {
             const queueCommand = new CreateQueueCommand({ QueueName: queueName });
             const dlqCommand = new CreateQueueCommand({ QueueName: queueName + '-dlq' });
 
@@ -30,7 +35,14 @@ export class SQSInfrastructure {
                 this.client.send(queueCommand),
                 this.client.send(dlqCommand)
             ]);
-        }        
+
+            await Promise.all([
+                this.tag(queueName, tags),
+                this.tag(queueName + '-dlq', tags)
+            ]);
+
+            await this.createDlqPolicy(queueName);
+        }
 
         return {
             QueueArn: QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName),
@@ -58,18 +70,36 @@ export class SQSInfrastructure {
         await this.client.send(command);
     }
 
-    private async createDlqPolicy() {
+    private async createDlqPolicy(queueName: string) {
+        const redrivePolicy = {
+            deadLetterTargetArn: QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName + '-dlq'),
+            maxReceiveCount: 100
+        };
 
+        await this.client.send(new SetQueueAttributesCommand({
+            QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
+            Attributes: { RedrivePolicy: JSON.stringify(redrivePolicy) }
+        }));
     }
 
-    private async tag() {
+    private async tag(queueName: string, tags: TagsResourceInput) {
+        const formatedTags = tags.reduce((accumulator: any, current: any) => {
+            accumulator[current.Key] = current.Value;
+            return accumulator;
+        }, {});
 
+        const command = new TagQueueCommand({
+            QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
+            Tags: formatedTags
+        });
+
+        await this.client.send(command);
     }
 
     private async check(queueName: string) {
         const command = new ListQueuesCommand({ QueueNamePrefix: queueName });
         const output = await this.client.send(command);
-        
+
         return output.QueueUrls ? true : false;
     }
 }
