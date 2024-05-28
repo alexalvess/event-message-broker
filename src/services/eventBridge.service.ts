@@ -1,12 +1,12 @@
 import { EventBridge } from 'aws-sdk';
-import config from '../config.json';
 import { logInformation, logError } from '../utils/log';
 import { createRule } from '../infrastructure/eventBridge.infra';
+import { TOPIC_ARN_TEMPLATE } from '../utils/constants';
 
 const eventBridge = new EventBridge();
 
 export async function scheduleMessage(topicName: string, message: any, scheduleDate: Date) {
-    const topicArn = `${config.snsArn}:${config.region}:${config.account}:${topicName}`;
+    const topicArn = TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName);
 
     const rule = await createRule(scheduleDate);
 

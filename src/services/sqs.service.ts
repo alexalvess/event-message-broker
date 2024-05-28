@@ -1,8 +1,8 @@
 import { SQS } from 'aws-sdk';
-import config from '../config.json';
 import { Consumer } from 'sqs-consumer';
 import { deleteEventBridgeRule } from './eventBridge.service';
 import { logInformation, logError, logWarning } from '../utils/log';
+import { QUEUE_URL_TEMPLATE } from '../utils/constants';
 
 const sqs = new SQS();
 
@@ -15,7 +15,7 @@ export async function sendMessageQueue(queueName: string, contentMessage: any, s
                 StringValue: '0'
             }
         },
-        QueueUrl: `http://sqs.${config.region}.${config.awsHost}:${config.port}/${config.account}/${queueName}`,
+        QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
         ...sendParams
     };
 
@@ -32,7 +32,7 @@ export async function sendMessageQueue(queueName: string, contentMessage: any, s
 export async function consumeMessages(queueName: string, resilienceParams: any, handle?: any) {
     const consumer = Consumer.create({
         messageAttributeNames: [ 'All' ],
-        queueUrl: `http://sqs.${config.region}.${config.awsHost}:${config.port}/${config.account}/${queueName}`,
+        queueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
         handleMessage: async (message: any) => {
             try {
                 let messageContent = JSON.parse(message.Body);

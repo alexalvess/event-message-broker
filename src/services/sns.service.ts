@@ -1,12 +1,12 @@
 import { SNS } from 'aws-sdk';
-import config from '../config.json';
 import { logInformation, logError } from '../utils/log';
+import { TOPIC_ARN_TEMPLATE } from '../utils/constants';
 
 const sns = new SNS();
 
 export async function publishMessage(topicName: string, contentMessage: any) {
     const params = {
-        TopicArn: `${config.snsArn}:${config.region}:${config.account}:${topicName}`,
+        TopicArn: TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName),
         Message: JSON.stringify(contentMessage),
     };
 
