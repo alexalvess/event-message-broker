@@ -1,14 +1,14 @@
-import { EventBridge } from 'aws-sdk');
-import {uuid} from 'uuid';
-import { logInformation } = require('../utils/log');
-import config = require('../config.json');
+import { EventBridge } from 'aws-sdk';
+import { v4 } from 'uuid';
+import { logInformation } from '../utils/log';
+import config from '../config.json';
 
 const eventBridge = new EventBridge();
 
-async function createRule(scheduleDate) {
-    const id = uuid.v4();
+export async function createRule(scheduleDate: Date) {
+    const id = v4();
 
-    const subtractDates = Math.abs(scheduleDate - new Date());
+    const subtractDates = Math.abs(scheduleDate.getTime() - new Date().getTime());
     let scheduleMinutes = Math.floor((subtractDates/1000)/60);
     scheduleMinutes = scheduleMinutes == 0 ? 1 : scheduleMinutes;
 
@@ -26,5 +26,3 @@ async function createRule(scheduleDate) {
         ruleArn: rule.RuleArn
     };
 }
-
-module.exports = { createRule }
