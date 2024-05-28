@@ -1,11 +1,11 @@
-const { EventBridge } = require('aws-sdk');
-const config = require('../config.json');
-const { logInformation, logError } = require('../utils/log');
-const { createRule } = require('../infrastructure/eventBridge.infra');
+import { EventBridge } from 'aws-sdk';
+import config from '../config.json';
+import { logInformation, logError } from '../utils/log';
+import { createRule } from '../infrastructure/eventBridge.infra';
 
 const eventBridge = new EventBridge();
 
-async function scheduleMessage(topicName, message, scheduleDate) {
+export async function scheduleMessage(topicName: string, message: any, scheduleDate: Date) {
     const topicArn = `${config.snsArn}:${config.region}:${config.account}:${topicName}`;
 
     const rule = await createRule(scheduleDate);
@@ -42,14 +42,12 @@ async function scheduleMessage(topicName, message, scheduleDate) {
     }
 }
 
-async function deleteEventBridgeRule(queueName, ruleName) {
+export async function deleteEventBridgeRule(queueName: string, ruleName: string) {
     try {
         await eventBridge.removeTargets({ Rule: ruleName, Ids: [ruleName] }).promise();
         await eventBridge.deleteRule({ Name: ruleName }).promise();
         logInformation(`Deleting schedule rule from ${queueName}:`, ruleName);
-    } catch (error) {
-        logError(`Error trying delete rule from ${queueName}`, error.message)   
+    } catch (error: any) {
+        logError(`Error trying delete rule from ${queueName}`, error.message);
     }
 }
-
-module.exports = { scheduleMessage, deleteEventBridgeRule }
