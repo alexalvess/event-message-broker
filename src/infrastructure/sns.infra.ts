@@ -1,6 +1,7 @@
 import { SNS } from 'aws-sdk';
 import config from '../config.json';
 import { logInformation, logError } from '../utils/log';
+import { QUEUE_ARN_TEMPLATE, TOPIC_ARN_TEMPLATE } from '../utils/constants';
 
 const sns = new SNS();
 
@@ -19,8 +20,8 @@ export async function createSnsTopic(topicName: string) {
 export async function subscribeSnsTopicInQueue(topicName: string, queueName: string) {
     const params = {
         Protocol: 'sqs',
-        TopicArn: `${config.snsArn}:${config.region}:${config.account}:${topicName}`,
-        Endpoint: `${config.sqsArn}:${config.region}:${config.account}:${queueName}`,
+        TopicArn: TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName),
+        Endpoint: QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName),
     };
 
     try {

@@ -1,14 +1,6 @@
 {
-    "host": "localhost",
-    "port": 4566,
-    "region": "eu-west-2",
-    "account": "000000000000",
-    "snsArn": "arn:aws:sns",
-    "sqsArn": "arn:aws:sqs",
-    "awsHost": "localhost.localstack.cloud",
     "tags": [
         { "Key": "team", "Value": "your-team-name" },
         { "Key": "appName", "Value": "your-app-name" }
-    ],
-    "testMode": false
+    ]
 }
