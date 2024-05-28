@@ -4,7 +4,7 @@ import { logInformation, logError } from '../utils/log';
 
 const sqs = new SQS();
 
-export async function createQueue(queueName: string) {
+export async function createSqsQueue(queueName: string) {
   try {
     const tags = config.tags.reduce((accumulator: any, current: any) => {
       accumulator[current.Key] = current.Value;
