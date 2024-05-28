@@ -1,7 +1,7 @@
-const { EventBridge } = require('aws-sdk');
-const uuid = require('uuid');
-const { logInformation } = require('../utils/log');
-const config = require('../config.json');
+import { EventBridge } from 'aws-sdk');
+import {uuid} from 'uuid';
+import { logInformation } = require('../utils/log');
+import config = require('../config.json');
 
 const eventBridge = new EventBridge();
 

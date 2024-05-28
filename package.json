@@ -21,6 +21,7 @@
     "url": "https://github.com/alexalvess/aws-message-bus-package.git"
   },
   "dependencies": {
+    "@types/uuid": "^9.0.8",
     "aws-sdk": "^2.1531.0",
     "sqs-consumer": "^5.8.0",
     "uuid": "^9.0.1"
