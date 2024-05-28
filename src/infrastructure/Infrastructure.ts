@@ -1,7 +1,8 @@
 import { BindTopicInput } from "../utils/types";
 import { SNSInfrastructure } from "./sns.infra";
+import { SQSInfrastructure } from "./SQSInfrastructure";
 
-export class Infrastructure {
+export class Infrastructure{
     private readonly sns: SNSInfrastructure;
 
     constructor() {

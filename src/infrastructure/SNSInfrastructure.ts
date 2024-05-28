@@ -23,13 +23,13 @@ export class SNSInfrastructure {
         this.client = new SNSClient();
     }
 
-    public async createTopic(topicName: string, tags: TagsResourceInput): Promise<CreateTopicOutput> {
-        const exists = await this.checkTopic(topicName);
+    public async create(topicName: string, tags: TagsResourceInput): Promise<CreateTopicOutput> {
+        const exists = await this.check(topicName);
 
         if(!exists) {
             const command = new CreateTopicCommand({ Name: topicName });
             await this.client.send(command);
-            await this.tagTopic(topicName, tags);
+            await this.tag(topicName, tags);
         }
     
         return {
@@ -50,7 +50,7 @@ export class SNSInfrastructure {
         return output.SubscriptionArn;
     }
 
-    private async tagTopic(topicName: string, tags: TagsResourceInput) {
+    private async tag(topicName: string, tags: TagsResourceInput) {
         const command = new TagResourceCommand({
             ResourceArn: TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName),
             Tags: tags
@@ -59,7 +59,7 @@ export class SNSInfrastructure {
         await this.client.send(command);
     }
 
-    private async checkTopic(topicName: string): Promise<boolean> {
+    private async check(topicName: string): Promise<boolean> {
         try {
             const topicArn = TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName);
             const command = new GetTopicAttributesCommand({ TopicArn: topicArn });

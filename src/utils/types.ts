@@ -9,6 +9,12 @@ export type TagsResourceInput = Array<{
     Value: string;
 }>;
 
+export type CreateQueueOutput = {
+    QueueArn: string;
+    QueueUrl: string;
+    Created: boolean;
+}
+
 export type CreateTopicOutput = {
     TopicArn: string;
     Created: boolean;
