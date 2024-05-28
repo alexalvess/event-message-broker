@@ -1,12 +1,12 @@
-const { SQS } = require('aws-sdk');
-const config = require('../config.json');
-const { Consumer } = require('sqs-consumer');
-const eventBridgeService = require('./eventBridge.service');
-const { logInformation, logError, logWarning } = require('../utils/log');
+import { SQS } from 'aws-sdk';
+import config from '../config.json';
+import { Consumer } from 'sqs-consumer';
+import { deleteEventBridgeRule } from './eventBridge.service';
+import { logInformation, logError, logWarning } from '../utils/log';
 
 const sqs = new SQS();
 
-async function sendMessageQueue(queueName, contentMessage, sendParams) {
+export async function sendMessageQueue(queueName: string, contentMessage: any, sendParams: any) {
     const params = {
         MessageBody: JSON.stringify(contentMessage),
         MessageAttributes: {
@@ -23,31 +23,32 @@ async function sendMessageQueue(queueName, contentMessage, sendParams) {
         const data = await sqs.sendMessage(params).promise();
         logInformation(`Sent SQS message to ${queueName}: `, data.MessageId);
         return data.MessageId;
-    } catch (error) {
+    } catch (error: any) {
         logError('Error to send message', error.message);
+        throw error;
     }
 }
 
-async function consumeMessages(queueName, resilienceParams, handle) {
+export async function consumeMessages(queueName: string, resilienceParams: any, handle?: any) {
     const consumer = Consumer.create({
         messageAttributeNames: [ 'All' ],
         queueUrl: `http://sqs.${config.region}.${config.awsHost}:${config.port}/${config.account}/${queueName}`,
-        handleMessage: async message => {
+        handleMessage: async (message: any) => {
             try {
-                const messageContent = JSON.parse(message.Body);
+                let messageContent = JSON.parse(message.Body);
 
                 if(messageContent.Type === 'Notification') {
                     messageContent = JSON.parse(messageContent.Message);
                 }
 
                 if(messageContent.scheduleId) {
-                    await eventBridgeService.deleteEventBridgeRule(queueName, messageContent.scheduleId);
+                    await deleteEventBridgeRule(queueName, messageContent.scheduleId);
                 }
 
                 handle(messageContent);
 
                 logInformation(`Message consumed from ${queueName}`);
-            } catch (error) {
+            } catch (error: any) {
                 logError(`Error processing message from ${queueName}:`, error.message);
                 executeSecondLevelResilience(queueName, message, resilienceParams.maxRetryCount, resilienceParams.delaySeconds);
             }
@@ -59,7 +60,7 @@ async function consumeMessages(queueName, resilienceParams, handle) {
     consumer.start();
 }
 
-function executeSecondLevelResilience(queueName, message, maxRetryCount, delaySeconds) {
+function executeSecondLevelResilience(queueName: string, message: any, maxRetryCount: number, delaySeconds: number) {
     let retryCount = message.MessageAttributes && parseInt(message.MessageAttributes['RetryCount'].StringValue);
     
     if (retryCount <= maxRetryCount) {
@@ -84,5 +85,3 @@ function executeSecondLevelResilience(queueName, message, maxRetryCount, delaySe
         });
     }
 }
-
-module.exports = { sendMessageQueue, consumeMessages }

@@ -4,7 +4,11 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "build:clean": "rm -rf ./build",
+    "build:esm": "tsc -p ./tsconfig.esm.json",
+    "build:cjs": "tsc -p ./tsconfig.cjs.json",
+    "build:types": "tsc -p ./tsconfig.types.json",
+    "build": "npm-run-all build:clean build:esm build:cjs build:types",
     "test": "jasmine --config=jasmine.json"
   },
   "author": {
@@ -17,13 +21,16 @@
     "url": "https://github.com/alexalvess/aws-message-bus-package.git"
   },
   "dependencies": {
+    "@types/uuid": "^9.0.8",
     "aws-sdk": "^2.1531.0",
     "sqs-consumer": "^5.8.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "jasmine": "^5.1.0",
-    "testcontainers": "^10.5.0"
+    "npm-run-all": "^4.1.5",
+    "testcontainers": "^10.5.0",
+    "typescript": "^5.4.5"
   },
   "keywords": [
     "message bus",
