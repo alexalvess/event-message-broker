@@ -1,12 +1,12 @@
-const { SQS } = require('aws-sdk');
-const config = require('../config.json');
-const { logInformation, logError } = require('../utils/log');
+import { SQS } from 'aws-sdk';
+import config from '../config.json';
+import { logInformation, logError } from '../utils/log';
 
 const sqs = new SQS();
 
-async function createQueue(queueName) {
+export async function createQueue(queueName: string) {
   try {
-    const tags = config.tags.reduce((accumulator, current) => {
+    const tags = config.tags.reduce((accumulator: any, current: any) => {
       accumulator[current.Key] = current.Value;
       return accumulator;
     }, {});
@@ -16,9 +16,8 @@ async function createQueue(queueName) {
     logInformation('Queues created:', [queue.QueueUrl, dlq.QueueUrl]);
 
     return [queue.QueueUrl, dlq.QueueUrl];
-  } catch (error) {
+  } catch (error: any) {
     logError('Error to create queue:', error.message);
+    throw error;
   }
 }
-
-module.exports = { createQueue }
