@@ -3,12 +3,17 @@ import { Message } from "@aws-sdk/client-sqs";
 export type BindTopicInput = {
     TopicName: string;
     QueueName: string;
-    Tags: TagsResourceInput
+    Tags?: TagsResourceInput
 };
 
 export type TagsResourceInput = Array<{
     Key: string;
     Value: string;
+}>;
+
+export type ConfigureEndpoint = Array<{
+    Queue: string,
+    Topic: string
 }>;
 
 export type CreateQueueOutput = {

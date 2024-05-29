@@ -12,9 +12,9 @@ import {
     TOPIC_ARN_TEMPLATE
 } from "../utils/constants";
 
-import { 
-    CreateQueueOutput, 
-    TagsResourceInput 
+import {
+    CreateQueueOutput,
+    TagsResourceInput
 } from "../utils/types";
 
 export class SQSInfrastructure {
@@ -24,7 +24,7 @@ export class SQSInfrastructure {
         this.client = new SQSClient();
     }
 
-    public async create(queueName: string, tags: TagsResourceInput): Promise<CreateQueueOutput> {
+    public async create(queueName: string, tags?: TagsResourceInput): Promise<CreateQueueOutput> {
         const exists = await this.check(queueName);
 
         if (!exists) {
@@ -36,10 +36,12 @@ export class SQSInfrastructure {
                 this.client.send(dlqCommand)
             ]);
 
-            await Promise.all([
-                this.tag(queueName, tags),
-                this.tag(queueName + '-dlq', tags)
-            ]);
+            if (tags) {
+                await Promise.all([
+                    this.tag(queueName, tags),
+                    this.tag(queueName + '-dlq', tags)
+                ]);
+            }
 
             await this.createDlqPolicy(queueName);
         }

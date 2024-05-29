@@ -23,13 +23,16 @@ export class SNSInfrastructure {
         this.client = new SNSClient();
     }
 
-    public async create(topicName: string, tags: TagsResourceInput): Promise<CreateTopicOutput> {
+    public async create(topicName: string, tags?: TagsResourceInput): Promise<CreateTopicOutput> {
         const exists = await this.check(topicName);
 
         if(!exists) {
             const command = new CreateTopicCommand({ Name: topicName });
             await this.client.send(command);
-            await this.tag(topicName, tags);
+            
+            if(tags) {
+                await this.tag(topicName, tags);
+            }
         }
     
         return {

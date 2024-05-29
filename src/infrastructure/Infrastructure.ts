@@ -11,7 +11,7 @@ export class Infrastructure{
         this.sqs = new SQSInfrastructure();
     }
 
-    public async createQueue(queueName: string, tags: TagsResourceInput) {
+    public async createQueue(queueName: string, tags?: TagsResourceInput) {
         await this.sqs.create(queueName, tags);
     }
 
