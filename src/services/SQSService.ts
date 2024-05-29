@@ -5,6 +5,7 @@ import {
 
 import { 
     ConsumerParams, 
+    MessageContext, 
     RedeliveryInput, 
     SecondLevelResilienceInput 
 } from "../utils/types";
@@ -67,10 +68,35 @@ export class SQSService {
             messageAttributeNames: ['All'],
             queueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', params.Endpoint),
             batchSize: params.BatchSize,
-            
+            sqs: this.client,
+            handleMessage: async (message: MessageContext<TMessage>) => {
+                try {
+                    this.bindMessage(message);
+                    await params.handle(message);
+                } catch (error: any) {
+                    await this.secondLevelResilience({
+                        DelaySeconds: params.DelaySeconds,
+                        MaxRetryCount: params.MaxRetryCount,
+                        Message: message,
+                        QueueName: params.Endpoint
+                    });
+                }
+            }
         });
 
         consumer.start();
+    }
+
+    private bindMessage<TMessage extends keyof Object>(message: MessageContext<TMessage>) {
+        if (message.Body) {
+            let messageContent = JSON.parse(message.Body);
+
+            if (messageContent.Type === 'Notification') {
+                messageContent = JSON.parse(messageContent.Message);
+            }
+
+            message.Content = messageContent;
+        }
     }
 
     private async secondLevelResilience<TMessage extends keyof Object>(params: SecondLevelResilienceInput<TMessage>) {
