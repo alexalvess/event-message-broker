@@ -56,7 +56,7 @@ export class SQSInfrastructure {
         const queueArn = QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName);
         const topicArn = TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName);
 
-        const policy = await import('./sqsPolicy.json');
+        const policy = (await import('./policies.json')).linkTopicQueuePolicy;
         policy.Statement[0].Resource = queueArn;
         policy.Statement[0].Condition.ArnEquals["aws:SourceArn"] = topicArn;
 
@@ -71,14 +71,12 @@ export class SQSInfrastructure {
     }
 
     private async createDlqPolicy(queueName: string) {
-        const redrivePolicy = {
-            deadLetterTargetArn: QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName + '-dlq'),
-            maxReceiveCount: 100
-        };
+        const policy = (await import('./policies.json')).redrivePolicy;
+        policy.deadLetterTargetAr = QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName + '-dlq');
 
         await this.client.send(new SetQueueAttributesCommand({
             QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
-            Attributes: { RedrivePolicy: JSON.stringify(redrivePolicy) }
+            Attributes: { RedrivePolicy: JSON.stringify(policy) }
         }));
     }
 
