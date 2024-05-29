@@ -63,7 +63,7 @@ export class SQSService {
         return output.MessageId;
     }
 
-    public async consume<TMessage extends keyof Object>(params: ConsumerParams<TMessage>) {
+    public consume<TMessage extends keyof Object>(params: ConsumerParams<TMessage>) {
         const consumer = Consumer.create({
             messageAttributeNames: ['All'],
             queueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', params.Endpoint),

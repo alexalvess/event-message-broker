@@ -46,4 +46,15 @@ export class ConsumerParams<TMessage extends keyof Object> {
     MaxRetryCount: number = 0;
     DelaySeconds: number = 0;
     BatchSize: number = 10;
+};
+
+export class ScheduleInput<TMessage extends keyof Object> {
+    Message: TMessage;
+    ScheduleDate: Date;
+    TopicName: string;
+}
+
+export class ScheduleOutput {
+    Id: string;
+    ScheduleArn: string | undefined;
 }
