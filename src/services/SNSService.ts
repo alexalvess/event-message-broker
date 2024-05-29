@@ -12,7 +12,7 @@ export class SNSService {
         this.client = new SNSClient();
     }
 
-    public async publish<TMessage extends keyof Object>(
+    public async publish<TMessage extends Object>(
         topicName: string, 
         message: TMessage
     ): Promise<string | undefined> {

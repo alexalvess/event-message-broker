@@ -27,25 +27,25 @@ export type CreateTopicOutput = {
     Created: boolean;
 };
 
-export type SecondLevelResilienceInput<TMessage extends keyof Object> = {
+export type SecondLevelResilienceInput<TMessage extends Object> = {
     QueueName: string;
     Message: MessageContext<TMessage>;
     MaxRetryCount: number;
     DelaySeconds: number;
 };
 
-export type RedeliveryInput<TMessage extends keyof Object> = {
+export type RedeliveryInput<TMessage extends Object> = {
     QueueName: string;
     Message: MessageContext<TMessage>;
     DelaySeconds: number;
     Params?: {}
 };
 
-export interface MessageContext<TMessage extends keyof Object> extends Message {
+export interface MessageContext<TMessage extends Object> extends Message {
     Content: TMessage;
 };
 
-export class ConsumerParams<TMessage extends keyof Object> {
+export class ConsumerParams<TMessage extends Object> {
     Endpoint: string;
     handle: (message: MessageContext<TMessage>) => Promise<void>;
     MaxRetryCount: number = 0;
@@ -53,7 +53,7 @@ export class ConsumerParams<TMessage extends keyof Object> {
     BatchSize: number = 10;
 };
 
-export class ScheduleInput<TMessage extends keyof Object> {
+export class ScheduleInput<TMessage extends Object> {
     Message: TMessage;
     ScheduleDate: Date;
     TopicName: string;
