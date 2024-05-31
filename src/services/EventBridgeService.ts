@@ -8,13 +8,14 @@ import {
 import { v4 } from "uuid";
 import { TOPIC_ARN_TEMPLATE } from "../utils/constants";
 import { 
+    GenericMessage,
     ScheduleInput, 
     ScheduleOutput 
 } from '../utils/types';
 import { Configuration } from "../utils/Configuration";
 
 export class EventBridgeService extends SchedulerClient {
-    public async schedule<TMessage extends Object>(params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
+    public async schedule<TMessage extends GenericMessage>(params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
         const scheduleName = v4();
 
         const command = new CreateScheduleCommand({
@@ -41,7 +42,7 @@ export class EventBridgeService extends SchedulerClient {
         }
     }
 
-    public async update<TMessage extends Object>(name: string, params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
+    public async update<TMessage extends GenericMessage>(name: string, params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
         const command = new UpdateScheduleCommand({
             Name: name,
             Description: "Schedule a message",

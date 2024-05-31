@@ -1,5 +1,10 @@
 import { Message } from "@aws-sdk/client-sqs";
 
+export type GenericMessage = {
+    Timestamp: Date;
+    CorrelationId: string;
+}
+
 export type BindTopicInput = {
     TopicName: string;
     QueueName: string;
