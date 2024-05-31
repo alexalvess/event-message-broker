@@ -1,7 +1,7 @@
 import { Bus, MessageBus } from '../../src/index';
+
 const queueName = 'my-test-queue';
 const topicName = 'my-test-topic'
-
 
 describe('Infrastructures', () => {
     it(MessageBus.configureEndpoints.name, async () => {

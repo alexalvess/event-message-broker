@@ -8,16 +8,17 @@ export class MessageBus {
 
     public static configureTags(tags: TagsResourceInput) {
         Configuration.pushTags(tags);
-        return this;
     }
 
     public static async configureEndpoints(endpoints: ConfigureEndpoint) {
-        for(const endpoint of endpoints) {
-            await this.infrastructure.createQueue(endpoint.Queue);
-            await this.infrastructure.bindTopic({
-                QueueName: endpoint.Queue,
-                TopicName: endpoint.Topic
-            });
-        }
+        await Promise.all(
+            endpoints.map(async endpoint => {
+                await this.infrastructure.createQueue(endpoint.Queue);
+                await this.infrastructure.bindTopic({
+                    QueueName: endpoint.Queue,
+                    TopicName: endpoint.Topic
+                });
+            })
+        );
     }
 }
