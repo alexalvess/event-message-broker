@@ -12,9 +12,9 @@ import {
 } from '@aws-sdk/client-sns';
 
 import { 
-    CreateTopicOutput, 
-    TagsResourceInput 
+    CreateTopicOutput
 } from '../utils/types';
+import { Configuration } from './Configuration';
 
 export class SNSInfrastructure {
     private readonly client: SNSClient;
@@ -23,16 +23,13 @@ export class SNSInfrastructure {
         this.client = new SNSClient();
     }
 
-    public async create(topicName: string, tags?: TagsResourceInput): Promise<CreateTopicOutput> {
+    public async create(topicName: string): Promise<CreateTopicOutput> {
         const exists = await this.check(topicName);
 
         if(!exists) {
             const command = new CreateTopicCommand({ Name: topicName });
             await this.client.send(command);
-            
-            if(tags) {
-                await this.tag(topicName, tags);
-            }
+            await this.tag(topicName);
         }
     
         return {
@@ -53,10 +50,14 @@ export class SNSInfrastructure {
         return output.SubscriptionArn;
     }
 
-    private async tag(topicName: string, tags: TagsResourceInput) {
+    private async tag(topicName: string) {
+        if(!Configuration.tags || Configuration.tags.length < 1) {
+            return;
+        }
+
         const command = new TagResourceCommand({
             ResourceArn: TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName),
-            Tags: tags
+            Tags: Configuration.tags
         });
         
         await this.client.send(command);

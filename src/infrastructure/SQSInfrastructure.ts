@@ -14,8 +14,8 @@ import {
 
 import {
     CreateQueueOutput,
-    TagsResourceInput
 } from "../utils/types";
+import { Configuration } from "./Configuration";
 
 export class SQSInfrastructure {
     private readonly client: SQSClient;
@@ -24,7 +24,7 @@ export class SQSInfrastructure {
         this.client = new SQSClient();
     }
 
-    public async create(queueName: string, tags?: TagsResourceInput): Promise<CreateQueueOutput> {
+    public async create(queueName: string): Promise<CreateQueueOutput> {
         const exists = await this.check(queueName);
 
         if (!exists) {
@@ -36,12 +36,10 @@ export class SQSInfrastructure {
                 this.client.send(dlqCommand)
             ]);
 
-            if (tags) {
-                await Promise.all([
-                    this.tag(queueName, tags),
-                    this.tag(queueName + '-dlq', tags)
-                ]);
-            }
+            await Promise.all([
+                this.tag(queueName),
+                this.tag(queueName + '-dlq')
+            ]);
 
             await this.createDlqPolicy(queueName);
         }
@@ -82,8 +80,12 @@ export class SQSInfrastructure {
         }));
     }
 
-    private async tag(queueName: string, tags: TagsResourceInput) {
-        const formatedTags = tags.reduce((accumulator: any, current: any) => {
+    private async tag(queueName: string) {
+        if (!Configuration.tags || Configuration.tags.length < 1) {
+            return;
+        }
+
+        const formatedTags = Configuration.tags.reduce((accumulator: any, current: any) => {
             accumulator[current.Key] = current.Value;
             return accumulator;
         }, {});

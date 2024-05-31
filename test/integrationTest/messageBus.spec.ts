@@ -3,8 +3,8 @@ const queueName = 'my-test-queue';
 const topicName = 'my-test-topic'
 
 
-describe('Infrastructure', () => {
-    it('Create SQS Queue and SNS Topic', async () => {
+describe('Infrastructures', () => {
+    it(MessageBus.configureEndpoints.name, async () => {
         await MessageBus.configureEndpoints([
             {
                 Queue: queueName,
@@ -14,8 +14,8 @@ describe('Infrastructure', () => {
     });
 });
 
-describe('Service', () => {
-    it('Publish a message', async () => {
+describe('Services', () => {
+    it(Bus.publish.name, async () => {
         const message = { 
             Timestamp: new Date(),
             Username: 'Teste'

@@ -3,7 +3,6 @@ import { Message } from "@aws-sdk/client-sqs";
 export type BindTopicInput = {
     TopicName: string;
     QueueName: string;
-    Tags?: TagsResourceInput
 };
 
 export type TagsResourceInput = Array<{
