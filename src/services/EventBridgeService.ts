@@ -1,10 +1,20 @@
-import { CreateScheduleCommand, DeleteScheduleCommand, SchedulerClient, UpdateScheduleCommand } from "@aws-sdk/client-scheduler";
+import { 
+    SchedulerClient, 
+    CreateScheduleCommand, 
+    DeleteScheduleCommand, 
+    UpdateScheduleCommand,
+    TagResourceCommand
+} from "@aws-sdk/client-scheduler";
 import { v4 } from "uuid";
 import { TOPIC_ARN_TEMPLATE } from "../utils/constants";
-import { ScheduleInput, ScheduleOutput } from "../utils/types";
+import { 
+    ScheduleInput, 
+    ScheduleOutput 
+} from '../utils/types';
+import { Configuration } from "../utils/Configuration";
 
 export class EventBridgeService extends SchedulerClient {
-    public async schedule<TMessage extends keyof Object>(params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
+    public async schedule<TMessage extends Object>(params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
         const scheduleName = v4();
 
         const command = new CreateScheduleCommand({
@@ -12,7 +22,7 @@ export class EventBridgeService extends SchedulerClient {
             Description: 'Schedule a message',
             Target: {
                 Arn: TOPIC_ARN_TEMPLATE.replace('[topicName]', params.TopicName),
-                RoleArn: process.env.ROLE_ARN,
+                RoleArn: process.env.AWS_ROLE_ARN,
                 Input: JSON.stringify(params.Message)
             },
             FlexibleTimeWindow: {
@@ -23,20 +33,22 @@ export class EventBridgeService extends SchedulerClient {
 
         const output = await this.send(command);
 
+        await this.tag(output.ScheduleArn);
+
         return {
             Id: scheduleName,
             ScheduleArn: output.ScheduleArn
         }
     }
 
-    public async update<TMessage extends keyof Object>(name: string, params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
+    public async update<TMessage extends Object>(name: string, params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
         const command = new UpdateScheduleCommand({
             Name: name,
             Description: "Schedule a message",
             ScheduleExpression: `at(${params.ScheduleDate})`,
             Target: {
                 Arn: TOPIC_ARN_TEMPLATE.replace('[topicName]', params.TopicName),
-                RoleArn: process.env.ROLE_ARN,
+                RoleArn: process.env.AWS_ROLE_ARN,
                 Input: JSON.stringify(params.Message),
             },
             FlexibleTimeWindow: {
@@ -54,6 +66,15 @@ export class EventBridgeService extends SchedulerClient {
 
     public async delete(name: string) {
         const command = new DeleteScheduleCommand({ Name: name });
+        await this.send(command);
+    }
+
+    private async tag(resourceArn: string | undefined) {
+        const command = new TagResourceCommand({
+            ResourceArn: resourceArn,
+            Tags: Configuration.tags
+        });
+
         await this.send(command);
     }
 }

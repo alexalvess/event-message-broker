@@ -11,12 +11,12 @@ export class Infrastructure{
         this.sqs = new SQSInfrastructure();
     }
 
-    public async createQueue(queueName: string, tags?: TagsResourceInput) {
-        await this.sqs.create(queueName, tags);
+    public async createQueue(queueName: string) {
+        await this.sqs.create(queueName);
     }
 
     public async bindTopic(binder: BindTopicInput) {
-        const topicOutput = await this.sns.create(binder.TopicName, binder.Tags);
+        const topicOutput = await this.sns.create(binder.TopicName);
 
         if(topicOutput.Created) {
             await this.sqs.linkTopicQueuePolicy(binder.QueueName, binder.TopicName);
