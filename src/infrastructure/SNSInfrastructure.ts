@@ -14,7 +14,7 @@ import {
 import { 
     CreateTopicOutput
 } from '../utils/types';
-import { Configuration } from './Configuration';
+import { Configuration } from '../utils/Configuration';
 
 export class SNSInfrastructure {
     private readonly client: SNSClient;

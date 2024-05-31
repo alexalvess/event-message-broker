@@ -1,5 +1,5 @@
 export { Bus } from './services/Bus';
-import { Configuration } from './infrastructure/Configuration';
+import { Configuration } from './utils/Configuration';
 import { Infrastructure } from './infrastructure/Infrastructure';
 import { ConfigureEndpoint, TagsResourceInput } from "./utils/types";
 

@@ -15,7 +15,7 @@ import {
 import {
     CreateQueueOutput,
 } from "../utils/types";
-import { Configuration } from "./Configuration";
+import { Configuration } from "../utils/Configuration";
 
 export class SQSInfrastructure {
     private readonly client: SQSClient;

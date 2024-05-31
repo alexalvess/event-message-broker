@@ -1,7 +1,17 @@
-import { CreateScheduleCommand, DeleteScheduleCommand, SchedulerClient, UpdateScheduleCommand } from "@aws-sdk/client-scheduler";
+import { 
+    SchedulerClient, 
+    CreateScheduleCommand, 
+    DeleteScheduleCommand, 
+    UpdateScheduleCommand,
+    TagResourceCommand
+} from "@aws-sdk/client-scheduler";
 import { v4 } from "uuid";
 import { TOPIC_ARN_TEMPLATE } from "../utils/constants";
-import { ScheduleInput, ScheduleOutput } from "../utils/types";
+import { 
+    ScheduleInput, 
+    ScheduleOutput 
+} from '../utils/types';
+import { Configuration } from "../utils/Configuration";
 
 export class EventBridgeService extends SchedulerClient {
     public async schedule<TMessage extends Object>(params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
@@ -22,6 +32,8 @@ export class EventBridgeService extends SchedulerClient {
         });
 
         const output = await this.send(command);
+
+        await this.tag(output.ScheduleArn);
 
         return {
             Id: scheduleName,
@@ -54,6 +66,15 @@ export class EventBridgeService extends SchedulerClient {
 
     public async delete(name: string) {
         const command = new DeleteScheduleCommand({ Name: name });
+        await this.send(command);
+    }
+
+    private async tag(resourceArn: string | undefined) {
+        const command = new TagResourceCommand({
+            ResourceArn: resourceArn,
+            Tags: Configuration.tags
+        });
+
         await this.send(command);
     }
 }
