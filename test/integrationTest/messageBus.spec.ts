@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { Bus, MessageBus } from '../../src/index';
 
 const queueName = 'my-test-queue';
@@ -15,10 +16,21 @@ describe('Infrastructures', () => {
 });
 
 describe('Services', () => {
-    it(Bus.publish.name, async () => {
-        const message = { 
+    it(Bus.send.name, async () => {
+        const message = {
+            CorrelationId: v4(),
             Timestamp: new Date(),
-            Username: 'Teste'
+            Username: 'Test'
+        };
+
+        const output = await Bus.send(queueName, message);
+    });
+
+    it(Bus.publish.name, async () => {
+        const message = {
+            CorrelationId: v4(),
+            Timestamp: new Date(),
+            Username: 'Test'
         };
 
         const output = await Bus.publish(topicName, message);

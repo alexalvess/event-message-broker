@@ -5,6 +5,7 @@ import {
 
 import { 
     ConsumerParams, 
+    GenericMessage, 
     MessageContext, 
     RedeliveryInput, 
     SecondLevelResilienceInput 
@@ -20,7 +21,7 @@ export class SQSService {
         this.client = new SQSClient();
     }
 
-    public async send<TMessage extends Object>(
+    public async send<TMessage extends GenericMessage>(
         queueName: string, 
         message: TMessage,
         params?: {}
@@ -36,7 +37,7 @@ export class SQSService {
         return output.MessageId;
     }
 
-    public async redelivery<TMessage extends Object>(params: RedeliveryInput<TMessage>) {
+    public async redelivery<TMessage extends GenericMessage>(params: RedeliveryInput<TMessage>) {
         const command = new SendMessageCommand({
             QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', params.QueueName),
             MessageBody: params.Message.Body,
@@ -63,7 +64,7 @@ export class SQSService {
         return output.MessageId;
     }
 
-    public consume<TMessage extends Object>(params: ConsumerParams<TMessage>) {
+    public consume<TMessage extends GenericMessage>(params: ConsumerParams<TMessage>) {
         const consumer = Consumer.create({
             messageAttributeNames: ['All'],
             queueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', params.Endpoint),
@@ -87,7 +88,7 @@ export class SQSService {
         consumer.start();
     }
 
-    private bindMessage<TMessage extends Object>(message: MessageContext<TMessage>) {
+    private bindMessage<TMessage extends GenericMessage>(message: MessageContext<TMessage>) {
         if (message.Body) {
             let messageContent = JSON.parse(message.Body);
 
@@ -99,7 +100,7 @@ export class SQSService {
         }
     }
 
-    private async secondLevelResilience<TMessage extends Object>(params: SecondLevelResilienceInput<TMessage>) {
+    private async secondLevelResilience<TMessage extends GenericMessage>(params: SecondLevelResilienceInput<TMessage>) {
         let retryCount: number = parseInt(params.Message?.MessageAttributes?.['RetryCount']?.StringValue ?? '0');
 
         await this.send(

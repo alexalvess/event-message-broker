@@ -4,6 +4,7 @@ import {
 } from "@aws-sdk/client-sns";
 
 import { TOPIC_ARN_TEMPLATE } from "../utils/constants";
+import { GenericMessage } from "../utils/types";
 
 export class SNSService {
     private readonly client: SNSClient;
@@ -12,7 +13,7 @@ export class SNSService {
         this.client = new SNSClient();
     }
 
-    public async publish<TMessage extends Object>(
+    public async publish<TMessage extends GenericMessage>(
         topicName: string, 
         message: TMessage
     ): Promise<string | undefined> {
