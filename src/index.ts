@@ -2,6 +2,7 @@ export { Bus } from './services/Bus';
 import { Configuration } from './utils/Configuration';
 import { Infrastructure } from './infrastructure/Infrastructure';
 import { ConfigureEndpoint, TagsResourceInput } from "./utils/types";
+import opentelemetry from '@opentelemetry/api';
 
 export class MessageBus {
     private static infrastructure = new Infrastructure();
@@ -11,6 +12,8 @@ export class MessageBus {
     }
 
     public static async configureEndpoints(endpoints: ConfigureEndpoint) {
+        //TODO: incluir metric provider para contar numero de mensagens enviadas
+
         await Promise.all(
             endpoints.map(async endpoint => {
                 await this.infrastructure.createQueue(endpoint.Queue);
