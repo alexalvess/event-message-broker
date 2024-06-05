@@ -13,6 +13,8 @@ import {
 
 import { QUEUE_URL_TEMPLATE } from "../utils/constants";
 import { Consumer } from "sqs-consumer";
+import { startSpan } from "../utils/o11y";
+import { SpanKind } from '@opentelemetry/api';
 
 export class SQSService {
     private readonly client: SQSClient;
@@ -28,7 +30,7 @@ export class SQSService {
     ) {
         const command = new SendMessageCommand({
             MessageBody: JSON.stringify(message),
-            QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
+            QueueUrl: QUEUE_URL_TEMPLATE(queueName),
             ...params
         });
 
@@ -39,7 +41,7 @@ export class SQSService {
 
     public async redelivery<TMessage extends GenericMessage>(params: RedeliveryInput<TMessage>) {
         const command = new SendMessageCommand({
-            QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', params.QueueName),
+            QueueUrl: QUEUE_URL_TEMPLATE(params.QueueName),
             MessageBody: params.Message.Body,
             DelaySeconds: params.DelaySeconds,
             MessageAttributes: {
@@ -61,19 +63,31 @@ export class SQSService {
 
         const output = await this.client.send(command);
 
-        return output.MessageId;
+        return {
+            messageId: output.MessageId,
+            startsAt: command.input.MessageAttributes?.['RedeliveryStartsAt'].StringValue,
+            attempt: command.input.MessageAttributes?.['RedeliveryAttempt'].StringValue
+        };
     }
 
     public consume<TMessage extends GenericMessage>(params: ConsumerParams<TMessage>) {
         const consumer = Consumer.create({
             messageAttributeNames: ['All'],
-            queueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', params.Endpoint),
+            queueUrl: QUEUE_URL_TEMPLATE(params.Endpoint),
             batchSize: params.BatchSize,
             sqs: this.client,
             handleMessage: async (message: MessageContext<TMessage>) => {
+                const span = startSpan('bus', SpanKind.CONSUMER);
+
                 try {
+                    span.setAttribute('queue', params.Endpoint);
+
                     this.bindMessage(message);
                     await params.handle(message);
+
+                    span.addEvent('message-consumed', {
+                        correlationId: message.Content.CorrelationId
+                    });
                 } catch (error: any) {
                     await this.secondLevelResilience({
                         DelaySeconds: params.DelaySeconds,
@@ -81,6 +95,8 @@ export class SQSService {
                         Message: message,
                         QueueName: params.Endpoint
                     });
+                } finally {
+                    span.end();
                 }
             }
         });

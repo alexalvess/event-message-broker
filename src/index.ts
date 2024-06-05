@@ -12,8 +12,6 @@ export class MessageBus {
     }
 
     public static async configureEndpoints(endpoints: ConfigureEndpoint) {
-        //TODO: incluir metric provider para contar numero de mensagens enviadas
-
         await Promise.all(
             endpoints.map(async endpoint => {
                 await this.infrastructure.createQueue(endpoint.Queue);
