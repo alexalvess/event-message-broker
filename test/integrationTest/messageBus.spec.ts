@@ -1,3 +1,4 @@
+import './bootstrap/aws.config';
 import { v4 } from 'uuid';
 import { MessageBus } from '../../src/index';
 
