@@ -1,19 +1,5 @@
 import { Message } from "@aws-sdk/client-sqs";
 
-export type GenericMessage = {
-    Timestamp: Date;
-    CorrelationId: string;
-}
-
-export type BindTopicInput = {
-    TopicName: string;
-    QueueName: string;
-};
-
-export type TagsResourceInput = Array<{
-    Key: string;
-    Value: string;
-}>;
 
 export type ConfigureEndpoint = Array<{
     Queue: string,
@@ -56,12 +42,6 @@ export class ConsumerParams<TMessage extends Object> {
     DelaySeconds: number = 0;
     BatchSize: number = 10;
 };
-
-export class ScheduleInput<TMessage extends Object> {
-    Message: TMessage;
-    ScheduleDate: Date;
-    TopicName: string;
-}
 
 export class ScheduleOutput {
     Id: string;

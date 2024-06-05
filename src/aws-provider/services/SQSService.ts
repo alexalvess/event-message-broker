@@ -5,7 +5,6 @@ import {
 
 import { 
     ConsumerParams, 
-    GenericMessage, 
     MessageContext, 
     RedeliveryInput, 
     SecondLevelResilienceInput 
@@ -13,8 +12,9 @@ import {
 
 import { QUEUE_URL_TEMPLATE } from "../utils/constants";
 import { Consumer } from "sqs-consumer";
-import { startSpan } from "../utils/o11y";
+import { startSpan } from "../../application/utils/o11y";
 import { SpanKind } from '@opentelemetry/api';
+import { GenericMessage } from "../../application/utils/types";
 
 export class SQSService {
     private readonly client: SQSClient;

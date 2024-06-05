@@ -1,16 +1,21 @@
-import { startSpan } from "../utils/o11y";
-import { ConsumerParams, GenericMessage, RedeliveryInput, ScheduleInput } from "../utils/types";
+import { IBus } from "../../application/iBus";
+import { startSpan } from "../../application/utils/o11y";
+import { GenericMessage, ScheduleInput } from "../../application/utils/types";
+import { ConsumerParams, RedeliveryInput } from "../utils/types";
 import { EventBridgeService } from "./EventBridgeService"
 import { SNSService } from "./SNSService";
 import { SQSService } from "./SQSService";
 import { Span, SpanKind, SpanStatusCode } from '@opentelemetry/api';
 
-export class Bus {
-    private static readonly eventBridge = new EventBridgeService();
-    private static readonly sqs = new SQSService();
-    private static readonly sns = new SNSService();
+export class Bus implements IBus {
+    private readonly eventBridge = new EventBridgeService();
+    private readonly sqs = new SQSService();
+    private readonly sns = new SNSService();
 
-    public static async publish<TMessage extends GenericMessage>(topicName: string, message: TMessage) {
+    public async publish<TMessage extends GenericMessage>(
+        topicName: string, 
+        message: TMessage
+    ) : Promise<void> {
         await this.handleSpan(async (span) => {
             span.setAttribute('topic', topicName);
             
@@ -24,7 +29,11 @@ export class Bus {
         });
     }
 
-    public static async send<TMessage extends GenericMessage>(queueName: string, message: TMessage, params?: {}){
+    public async send<TMessage extends GenericMessage>(
+        queueName: string, 
+        message: TMessage, 
+        params?: {}
+    ) : Promise<void> {
         await this.handleSpan(async (span) => {
             span.setAttribute('queue', queueName);
 
@@ -37,7 +46,9 @@ export class Bus {
         });
     }
 
-    public static async redelivery<TMessage extends GenericMessage>(params: RedeliveryInput<TMessage>) {
+    public async redelivery<TMessage extends GenericMessage>(
+        params: RedeliveryInput<TMessage>
+    ) : Promise<void> {
         await this.handleSpan(async (span) => {
             span.setAttribute('queue', params.QueueName);
 
@@ -54,7 +65,9 @@ export class Bus {
         });
     }
 
-    public static async schedule<TMessage extends GenericMessage>(params: ScheduleInput<TMessage>) {
+    public async schedule<TMessage extends GenericMessage>(
+        params: ScheduleInput<TMessage>
+    ) : Promise<void> {
         await this.handleSpan(async (span) => {
             span.setAttribute('topic', params.TopicName);
             
@@ -68,11 +81,13 @@ export class Bus {
         });
     }
 
-    public static consume<TMessage extends GenericMessage>(params: ConsumerParams<TMessage>){
-        return this.sqs.consume(params);
+    public consume<TMessage extends GenericMessage>(
+        params: ConsumerParams<TMessage>
+    ) : void {
+        this.sqs.consume(params);
     }
 
-    private static async handleSpan(func: (span: Span) => Promise<void>) {
+    private async handleSpan(func: (span: Span) => Promise<void>) {
         const span = startSpan('bus', SpanKind.PRODUCER);
         try {
             await func(span);
