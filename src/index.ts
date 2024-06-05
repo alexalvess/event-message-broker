@@ -1,4 +1,4 @@
-import { Bus as AWSBus } from './aws-provider/services/Bus';
+import { AWSBus } from './aws-provider/services/AWSBus';
 import { IBus } from './application/iBus';
 import { IInfrastructure } from './application/iInfrastructure';
 import { Configuration } from './application/utils/Configuration';
