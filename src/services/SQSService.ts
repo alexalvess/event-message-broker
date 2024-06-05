@@ -28,7 +28,7 @@ export class SQSService {
     ) {
         const command = new SendMessageCommand({
             MessageBody: JSON.stringify(message),
-            QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
+            QueueUrl: QUEUE_URL_TEMPLATE(queueName),
             ...params
         });
 
@@ -39,7 +39,7 @@ export class SQSService {
 
     public async redelivery<TMessage extends GenericMessage>(params: RedeliveryInput<TMessage>) {
         const command = new SendMessageCommand({
-            QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', params.QueueName),
+            QueueUrl: QUEUE_URL_TEMPLATE(params.QueueName),
             MessageBody: params.Message.Body,
             DelaySeconds: params.DelaySeconds,
             MessageAttributes: {
@@ -67,7 +67,7 @@ export class SQSService {
     public consume<TMessage extends GenericMessage>(params: ConsumerParams<TMessage>) {
         const consumer = Consumer.create({
             messageAttributeNames: ['All'],
-            queueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', params.Endpoint),
+            queueUrl: QUEUE_URL_TEMPLATE(params.Endpoint),
             batchSize: params.BatchSize,
             sqs: this.client,
             handleMessage: async (message: MessageContext<TMessage>) => {

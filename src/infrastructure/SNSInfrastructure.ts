@@ -33,15 +33,15 @@ export class SNSInfrastructure {
         }
     
         return {
-            TopicArn: TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName),
+            TopicArn: TOPIC_ARN_TEMPLATE(topicName),
             Created: !exists
         };
     }
 
     public async subscribeEndpoints(topicName: string, queueName: string): Promise<string | undefined> {
         const command = new SubscribeCommand({
-            TopicArn: TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName),
-            Endpoint: QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName),
+            TopicArn: TOPIC_ARN_TEMPLATE(topicName),
+            Endpoint: QUEUE_ARN_TEMPLATE(queueName),
             Protocol: 'sqs'
         });
 
@@ -56,7 +56,7 @@ export class SNSInfrastructure {
         }
 
         const command = new TagResourceCommand({
-            ResourceArn: TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName),
+            ResourceArn: TOPIC_ARN_TEMPLATE(topicName),
             Tags: Configuration.tags
         });
         
@@ -65,7 +65,7 @@ export class SNSInfrastructure {
 
     private async check(topicName: string): Promise<boolean> {
         try {
-            const topicArn = TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName);
+            const topicArn = TOPIC_ARN_TEMPLATE(topicName);
             const command = new GetTopicAttributesCommand({ TopicArn: topicArn });
             await this.client.send(command);
 

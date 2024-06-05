@@ -22,7 +22,7 @@ export class EventBridgeService extends SchedulerClient {
             Name: scheduleName,
             Description: 'Schedule a message',
             Target: {
-                Arn: TOPIC_ARN_TEMPLATE.replace('[topicName]', params.TopicName),
+                Arn: TOPIC_ARN_TEMPLATE(params.TopicName),
                 RoleArn: process.env.AWS_ROLE_ARN,
                 Input: JSON.stringify(params.Message)
             },
@@ -48,7 +48,7 @@ export class EventBridgeService extends SchedulerClient {
             Description: "Schedule a message",
             ScheduleExpression: `at(${params.ScheduleDate})`,
             Target: {
-                Arn: TOPIC_ARN_TEMPLATE.replace('[topicName]', params.TopicName),
+                Arn: TOPIC_ARN_TEMPLATE(params.TopicName),
                 RoleArn: process.env.AWS_ROLE_ARN,
                 Input: JSON.stringify(params.Message),
             },

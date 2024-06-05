@@ -18,7 +18,7 @@ export class SNSService {
         message: TMessage
     ): Promise<string | undefined> {
         const command = new PublishCommand({
-            TopicArn: TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName),
+            TopicArn: TOPIC_ARN_TEMPLATE(topicName),
             Message: JSON.stringify(message)
         });
 

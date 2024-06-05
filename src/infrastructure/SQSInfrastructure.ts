@@ -45,16 +45,16 @@ export class SQSInfrastructure {
         }
 
         return {
-            QueueArn: QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName),
-            QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
+            QueueArn: QUEUE_ARN_TEMPLATE(queueName),
+            QueueUrl: QUEUE_URL_TEMPLATE(queueName),
             Created: !exists
         }
     }
 
     public async linkTopicQueuePolicy(queueName: string, topicName: string) {
-        const queueUrl = QUEUE_URL_TEMPLATE.replace('[queueName]', queueName)
-        const queueArn = QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName);
-        const topicArn = TOPIC_ARN_TEMPLATE.replace('[topicName]', topicName);
+        const queueUrl = QUEUE_URL_TEMPLATE(queueName)
+        const queueArn = QUEUE_ARN_TEMPLATE(queueName);
+        const topicArn = TOPIC_ARN_TEMPLATE(topicName);
 
         const policy = (await import('./policies.json')).linkTopicQueuePolicy;
         policy.Statement[0].Resource = queueArn;
@@ -72,10 +72,10 @@ export class SQSInfrastructure {
 
     private async createDlqPolicy(queueName: string) {
         const policy = (await import('./policies.json')).redrivePolicy;
-        policy.deadLetterTargetAr = QUEUE_ARN_TEMPLATE.replace('[queueName]', queueName + '-dlq');
+        policy.deadLetterTargetAr = QUEUE_ARN_TEMPLATE(queueName + '-dlq');
 
         await this.client.send(new SetQueueAttributesCommand({
-            QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
+            QueueUrl: QUEUE_URL_TEMPLATE(queueName),
             Attributes: { RedrivePolicy: JSON.stringify(policy) }
         }));
     }
@@ -91,7 +91,7 @@ export class SQSInfrastructure {
         }, {});
 
         const command = new TagQueueCommand({
-            QueueUrl: QUEUE_URL_TEMPLATE.replace('[queueName]', queueName),
+            QueueUrl: QUEUE_URL_TEMPLATE(queueName),
             Tags: formatedTags
         });
 
