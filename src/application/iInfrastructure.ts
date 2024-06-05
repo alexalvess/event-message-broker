@@ -1,4 +1,4 @@
-import { BindTopicInput } from "../aws-provider/utils/types";
+import { BindTopicInput } from "./utils/types";
 
 export interface IInfrastructure {
     createQueue(queueName: string): Promise<void>;

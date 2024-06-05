@@ -1,20 +1,16 @@
 import { 
+    Message,
     SQSClient, 
     SendMessageCommand 
 } from "@aws-sdk/client-sqs";
 
-import { 
-    ConsumerParams, 
-    MessageContext, 
-    RedeliveryInput, 
-    SecondLevelResilienceInput 
-} from "../utils/types";
+import { AWSMessageContext } from "../utils/types";
 
 import { QUEUE_URL_TEMPLATE } from "../utils/constants";
 import { Consumer } from "sqs-consumer";
 import { startSpan } from "../../application/utils/o11y";
 import { SpanKind } from '@opentelemetry/api';
-import { GenericMessage } from "../../application/utils/types";
+import { ConsumerParams, GenericMessage, RedeliveryInput, SecondLevelResilienceInput } from "../../application/utils/types";
 
 export class SQSService {
     private readonly client: SQSClient;
@@ -39,7 +35,9 @@ export class SQSService {
         return output.MessageId;
     }
 
-    public async redelivery<TMessage extends GenericMessage>(params: RedeliveryInput<TMessage>) {
+    public async redelivery<TMessage extends GenericMessage>(
+        params: RedeliveryInput<AWSMessageContext<TMessage>, TMessage>
+    ) {
         const command = new SendMessageCommand({
             QueueUrl: QUEUE_URL_TEMPLATE(params.QueueName),
             MessageBody: params.Message.Body,
@@ -76,7 +74,7 @@ export class SQSService {
             queueUrl: QUEUE_URL_TEMPLATE(params.Endpoint),
             batchSize: params.BatchSize,
             sqs: this.client,
-            handleMessage: async (message: MessageContext<TMessage>) => {
+            handleMessage: async (message: AWSMessageContext<TMessage>) => {
                 const span = startSpan('bus', SpanKind.CONSUMER);
 
                 try {
@@ -104,7 +102,7 @@ export class SQSService {
         consumer.start();
     }
 
-    private bindMessage<TMessage extends GenericMessage>(message: MessageContext<TMessage>) {
+    private bindMessage<TMessage extends GenericMessage>(message: AWSMessageContext<TMessage>) {
         if (message.Body) {
             let messageContent = JSON.parse(message.Body);
 
@@ -116,7 +114,9 @@ export class SQSService {
         }
     }
 
-    private async secondLevelResilience<TMessage extends GenericMessage>(params: SecondLevelResilienceInput<TMessage>) {
+    private async secondLevelResilience<TMessage extends GenericMessage>(
+        params: SecondLevelResilienceInput<AWSMessageContext<TMessage>, TMessage>,
+    ) {
         let retryCount: number = parseInt(params.Message?.MessageAttributes?.['RetryCount']?.StringValue ?? '0');
 
         await this.send(

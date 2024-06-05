@@ -1,4 +1,5 @@
 import { Message } from "@aws-sdk/client-sqs";
+import { MessageContext } from "../../application/utils/types";
 
 
 export type ConfigureEndpoint = Array<{
@@ -17,31 +18,8 @@ export type CreateTopicOutput = {
     Created: boolean;
 };
 
-export type SecondLevelResilienceInput<TMessage extends Object> = {
-    QueueName: string;
-    Message: MessageContext<TMessage>;
-    MaxRetryCount: number;
-    DelaySeconds: number;
-};
-
-export type RedeliveryInput<TMessage extends Object> = {
-    QueueName: string;
-    Message: MessageContext<TMessage>;
-    DelaySeconds: number;
-    Params?: {}
-};
-
-export interface MessageContext<TMessage extends Object> extends Message {
-    Content: TMessage;
-};
-
-export class ConsumerParams<TMessage extends Object> {
-    Endpoint: string;
-    handle: (message: MessageContext<TMessage>) => Promise<void>;
-    MaxRetryCount: number = 0;
-    DelaySeconds: number = 0;
-    BatchSize: number = 10;
-};
+export interface AWSMessageContext<TMessage extends object> 
+    extends MessageContext<TMessage>, Message{};
 
 export class ScheduleOutput {
     Id: string;

@@ -19,7 +19,7 @@ export class MessageBus {
 
     public static configureTags(tags: TagsResourceInput) {
         Configuration.pushTags(tags);
-        
+
         return this;
     }
 

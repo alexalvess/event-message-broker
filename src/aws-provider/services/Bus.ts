@@ -1,7 +1,7 @@
 import { IBus } from "../../application/iBus";
 import { startSpan } from "../../application/utils/o11y";
-import { GenericMessage, ScheduleInput } from "../../application/utils/types";
-import { ConsumerParams, RedeliveryInput } from "../utils/types";
+import { ConsumerParams, GenericMessage, RedeliveryInput, ScheduleInput } from "../../application/utils/types";
+import { AWSMessageContext } from '../utils/types';
 import { EventBridgeService } from "./EventBridgeService"
 import { SNSService } from "./SNSService";
 import { SQSService } from "./SQSService";
@@ -47,7 +47,7 @@ export class Bus implements IBus {
     }
 
     public async redelivery<TMessage extends GenericMessage>(
-        params: RedeliveryInput<TMessage>
+        params: RedeliveryInput<AWSMessageContext<TMessage>, TMessage>
     ) : Promise<void> {
         await this.handleSpan(async (span) => {
             span.setAttribute('queue', params.QueueName);
