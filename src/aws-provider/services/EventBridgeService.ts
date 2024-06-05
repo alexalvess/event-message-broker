@@ -42,34 +42,6 @@ export class EventBridgeService extends SchedulerClient {
         }
     }
 
-    public async update<TMessage extends GenericMessage>(name: string, params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
-        const command = new UpdateScheduleCommand({
-            Name: name,
-            Description: "Schedule a message",
-            ScheduleExpression: `at(${params.ScheduleDate})`,
-            Target: {
-                Arn: TOPIC_ARN_TEMPLATE(params.TopicName),
-                RoleArn: process.env.AWS_ROLE_ARN,
-                Input: JSON.stringify(params.Message),
-            },
-            FlexibleTimeWindow: {
-                Mode: "OFF",
-            }
-        });
-
-        const output = await this.send(command);
-
-        return {
-            Id: name,
-            ScheduleArn: output.ScheduleArn
-        };
-    }
-
-    public async delete(name: string) {
-        const command = new DeleteScheduleCommand({ Name: name });
-        await this.send(command);
-    }
-
     private async tag(resourceArn: string | undefined) {
         const command = new TagResourceCommand({
             ResourceArn: resourceArn,

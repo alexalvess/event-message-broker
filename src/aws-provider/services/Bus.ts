@@ -68,30 +68,6 @@ export class Bus {
         });
     }
 
-    public static async updateSchedule<TMessage extends GenericMessage>(name: string, params: ScheduleInput<TMessage>) {
-        await this.handleSpan(async (span) => {
-            span.setAttribute('topic', params.TopicName);
-
-            const output = await this.eventBridge.update(name, params);
-
-            span.addEvent('schedule-message-updated', {
-                correlationId: params.Message.CorrelationId,
-                scheduleName: output.Id,
-                scheduleArn: output.ScheduleArn
-            });
-        });
-    }
-
-    public static async deleteSchedule(name: string) {
-        await this.handleSpan(async (span) => {
-            await this.eventBridge.delete(name);
-
-            span.addEvent('schedule-message-deleted', {
-                scheduleName: name
-            });
-        });
-    }
-
     public static consume<TMessage extends GenericMessage>(params: ConsumerParams<TMessage>){
         return this.sqs.consume(params);
     }
