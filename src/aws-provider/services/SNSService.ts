@@ -4,7 +4,7 @@ import {
 } from "@aws-sdk/client-sns";
 
 import { TOPIC_ARN_TEMPLATE } from "../utils/constants";
-import { GenericMessage } from "../utils/types";
+import { GenericMessage } from "../../application/utils/types";
 
 export class SNSService {
     private readonly client: SNSClient;

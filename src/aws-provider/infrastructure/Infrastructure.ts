@@ -1,10 +1,11 @@
-import { startSpan } from "../utils/o11y";
-import { BindTopicInput } from "../utils/types";
+import { IInfrastructure } from "../../application/iInfrastructure";
+import { startSpan } from "../../application/utils/o11y";
+import { BindTopicInput } from "../../application/utils/types";
 import { SNSInfrastructure } from "./SNSInfrastructure";
 import { SQSInfrastructure } from "./SQSInfrastructure";
 import { SpanKind, SpanStatusCode } from '@opentelemetry/api';
 
-export class Infrastructure{
+export class Infrastructure implements IInfrastructure {
     private readonly sns: SNSInfrastructure;
     private readonly sqs: SQSInfrastructure;
 

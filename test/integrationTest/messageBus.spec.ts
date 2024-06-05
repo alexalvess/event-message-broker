@@ -1,5 +1,6 @@
+import './bootstrap/aws.config';
 import { v4 } from 'uuid';
-import { Bus, MessageBus } from '../../src/index';
+import { MessageBus } from '../../src/index';
 
 const queueName = 'my-test-queue';
 const topicName = 'my-test-topic'
@@ -16,24 +17,24 @@ describe('Infrastructures', () => {
 });
 
 describe('Services', () => {
-    it(Bus.send.name, async () => {
+    it(MessageBus.Bus.send.name, async () => {
         const message = {
             CorrelationId: v4(),
             Timestamp: new Date(),
             Username: 'Test'
         };
 
-        const output = await Bus.send(queueName, message);
+        const output = await MessageBus.Bus.send(queueName, message);
     });
 
-    it(Bus.publish.name, async () => {
+    it(MessageBus.Bus.publish.name, async () => {
         const message = {
             CorrelationId: v4(),
             Timestamp: new Date(),
             Username: 'Test'
         };
 
-        const output = await Bus.publish(topicName, message);
+        const output = await MessageBus.Bus.publish(topicName, message);
 
         expect(output).not.toBeNull();
     });

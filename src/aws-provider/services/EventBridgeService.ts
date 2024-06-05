@@ -8,11 +8,10 @@ import {
 import { v4 } from "uuid";
 import { TOPIC_ARN_TEMPLATE } from "../utils/constants";
 import { 
-    GenericMessage,
-    ScheduleInput, 
     ScheduleOutput 
 } from '../utils/types';
-import { Configuration } from "../utils/Configuration";
+import { Configuration } from "../../application/utils/Configuration";
+import { GenericMessage, ScheduleInput } from "../../application/utils/types";
 
 export class EventBridgeService extends SchedulerClient {
     public async schedule<TMessage extends GenericMessage>(params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
@@ -40,34 +39,6 @@ export class EventBridgeService extends SchedulerClient {
             Id: scheduleName,
             ScheduleArn: output.ScheduleArn
         }
-    }
-
-    public async update<TMessage extends GenericMessage>(name: string, params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
-        const command = new UpdateScheduleCommand({
-            Name: name,
-            Description: "Schedule a message",
-            ScheduleExpression: `at(${params.ScheduleDate})`,
-            Target: {
-                Arn: TOPIC_ARN_TEMPLATE(params.TopicName),
-                RoleArn: process.env.AWS_ROLE_ARN,
-                Input: JSON.stringify(params.Message),
-            },
-            FlexibleTimeWindow: {
-                Mode: "OFF",
-            }
-        });
-
-        const output = await this.send(command);
-
-        return {
-            Id: name,
-            ScheduleArn: output.ScheduleArn
-        };
-    }
-
-    public async delete(name: string) {
-        const command = new DeleteScheduleCommand({ Name: name });
-        await this.send(command);
     }
 
     private async tag(resourceArn: string | undefined) {
