@@ -3,23 +3,31 @@ import { IBus } from './application/iBus';
 import { IInfrastructure } from './application/iInfrastructure';
 import { Configuration } from './application/utils/Configuration';
 import { TagsResourceInput } from './application/utils/types';
-import { Infrastructure as AWSInfrastructure } from './aws-provider/infrastructure/Infrastructure';
+import { AWSInfrastructure } from './aws-provider/infrastructure/AWSInfrastructure';
 import { ConfigureEndpoint } from "./aws-provider/utils/types";
+import { RabbitMqInfrastructure } from './rabbitmq-provider/infrastructure/RabbitMqInfrastructure';
 
 export class MessageBus {
     private static infrastructure: IInfrastructure;
     private static bus: IBus;
 
-    public static useAws() {
-        this.infrastructure = new AWSInfrastructure();
+    public static async useAws() {
+        this.infrastructure = await new AWSInfrastructure().use();
         this.bus = new AWSBus();
-
         return this;
+    }
+
+    public static async useRabbitMq() {
+        this.infrastructure = await new RabbitMqInfrastructure().use();
     }
 
     public static configureTags(tags: TagsResourceInput) {
         Configuration.pushTags(tags);
+        return this;
+    }
 
+    public static configurePrefetch(prefetch: number) {
+        Configuration.configurePrefetch(prefetch);
         return this;
     }
 

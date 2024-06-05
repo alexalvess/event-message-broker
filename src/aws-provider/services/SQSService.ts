@@ -11,6 +11,7 @@ import { Consumer } from "sqs-consumer";
 import { startSpan } from "../../application/utils/o11y";
 import { SpanKind } from '@opentelemetry/api';
 import { ConsumerParams, GenericMessage, RedeliveryInput, SecondLevelResilienceInput } from "../../application/utils/types";
+import { Configuration } from "../../application/utils/Configuration";
 
 export class SQSService {
     private readonly client: SQSClient;
@@ -72,7 +73,7 @@ export class SQSService {
         const consumer = Consumer.create({
             messageAttributeNames: ['All'],
             queueUrl: QUEUE_URL_TEMPLATE(params.Endpoint),
-            batchSize: params.BatchSize,
+            batchSize: Configuration.prefetch,
             sqs: this.client,
             handleMessage: async (message: AWSMessageContext<TMessage>) => {
                 const span = startSpan('bus', SpanKind.CONSUMER);

@@ -5,13 +5,17 @@ import { SNSInfrastructure } from "./SNSInfrastructure";
 import { SQSInfrastructure } from "./SQSInfrastructure";
 import { SpanKind, SpanStatusCode } from '@opentelemetry/api';
 
-export class Infrastructure implements IInfrastructure {
+export class AWSInfrastructure implements IInfrastructure {
     private readonly sns: SNSInfrastructure;
     private readonly sqs: SQSInfrastructure;
 
     constructor() {
         this.sns = new SNSInfrastructure();
         this.sqs = new SQSInfrastructure();
+    }
+
+    public async use() {
+        return this;
     }
 
     public async createQueue(queueName: string) {
