@@ -12,10 +12,9 @@ import {
     TOPIC_ARN_TEMPLATE
 } from "../utils/constants";
 
-import {
-    CreateQueueOutput,
-} from "../utils/types";
+import { CreateQueueOutput } from '../utils/types';
 import { Configuration } from "../utils/Configuration";
+import { Span } from '@opentelemetry/api';
 
 export class SQSInfrastructure {
     private readonly client: SQSClient;
@@ -24,24 +23,41 @@ export class SQSInfrastructure {
         this.client = new SQSClient();
     }
 
-    public async create(queueName: string): Promise<CreateQueueOutput> {
+    public async create(queueName: string, span: Span): Promise<CreateQueueOutput> {
+        span.setAttribute('queue', queueName);
+
         const exists = await this.check(queueName);
+
+        span.addEvent(exists ? 'queue-already-created' : 'queue-does-not-exists');
 
         if (!exists) {
             const queueCommand = new CreateQueueCommand({ QueueName: queueName });
             const dlqCommand = new CreateQueueCommand({ QueueName: queueName + '-dlq' });
 
             await Promise.all([
-                this.client.send(queueCommand),
-                this.client.send(dlqCommand)
+                async () => {
+                    const output = await this.client.send(queueCommand);
+                    span.addEvent('queue-created', { url: output.QueueUrl });
+                },
+                async () => {
+                    const output = await this.client.send(dlqCommand);
+                    span.addEvent('dlq-created', { url: output.QueueUrl });
+                }
             ]);
 
             await Promise.all([
-                this.tag(queueName),
-                this.tag(queueName + '-dlq')
+                async () => {
+                    const tags = await this.tag(queueName);
+                    span.addEvent('queue-tags-attached', { tags: JSON.stringify(tags) })
+                },
+                async () => {
+                    const tags = await this.tag(queueName + '-dlq');
+                    span.addEvent('dlq-tags-attached', { tags: JSON.stringify(tags) });
+                }
             ]);
 
-            await this.createDlqPolicy(queueName);
+            const policy = await this.createDlqPolicy(queueName);
+            span.addEvent('dlq-policy-created', { policy: JSON.stringify(policy) });
         }
 
         return {
@@ -68,16 +84,20 @@ export class SQSInfrastructure {
         });
 
         await this.client.send(command);
+        return policy;
     }
 
     private async createDlqPolicy(queueName: string) {
         const policy = (await import('./policies.json')).redrivePolicy;
         policy.deadLetterTargetAr = QUEUE_ARN_TEMPLATE(queueName + '-dlq');
 
-        await this.client.send(new SetQueueAttributesCommand({
+        const command = new SetQueueAttributesCommand({
             QueueUrl: QUEUE_URL_TEMPLATE(queueName),
             Attributes: { RedrivePolicy: JSON.stringify(policy) }
-        }));
+        });
+
+        await this.client.send(command);
+        return policy;
     }
 
     private async tag(queueName: string) {
@@ -96,6 +116,7 @@ export class SQSInfrastructure {
         });
 
         await this.client.send(command);
+        return Configuration.tags;
     }
 
     private async check(queueName: string) {

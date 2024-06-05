@@ -15,6 +15,7 @@ import {
     CreateTopicOutput
 } from '../utils/types';
 import { Configuration } from '../utils/Configuration';
+import { Span } from '@opentelemetry/api';
 
 export class SNSInfrastructure {
     private readonly client: SNSClient;
@@ -23,13 +24,21 @@ export class SNSInfrastructure {
         this.client = new SNSClient();
     }
 
-    public async create(topicName: string): Promise<CreateTopicOutput> {
+    public async create(topicName: string, span: Span): Promise<CreateTopicOutput> {
+        span.setAttribute('topic', topicName);
+
         const exists = await this.check(topicName);
+
+        span.addEvent(exists ? 'topic-already-created' : 'topic-does-not-exists');
 
         if(!exists) {
             const command = new CreateTopicCommand({ Name: topicName });
-            await this.client.send(command);
-            await this.tag(topicName);
+            
+            const output = await this.client.send(command);
+            span.addEvent('topic-created', { arn: output.TopicArn });
+
+            const tags = await this.tag(topicName);
+            span.addEvent('topic-tags-attached', { tags: JSON.stringify(tags) });
         }
     
         return {
@@ -46,7 +55,6 @@ export class SNSInfrastructure {
         });
 
         const output = await this.client.send(command);
-    
         return output.SubscriptionArn;
     }
 
@@ -61,6 +69,7 @@ export class SNSInfrastructure {
         });
         
         await this.client.send(command);
+        return Configuration.tags;
     }
 
     private async check(topicName: string): Promise<boolean> {

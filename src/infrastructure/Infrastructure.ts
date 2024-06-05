@@ -1,6 +1,8 @@
-import { BindTopicInput, TagsResourceInput } from "../utils/types";
+import { startSpan } from "../utils/o11y";
+import { BindTopicInput } from "../utils/types";
 import { SNSInfrastructure } from "./SNSInfrastructure";
 import { SQSInfrastructure } from "./SQSInfrastructure";
+import { SpanKind, SpanStatusCode } from '@opentelemetry/api';
 
 export class Infrastructure{
     private readonly sns: SNSInfrastructure;
@@ -12,15 +14,41 @@ export class Infrastructure{
     }
 
     public async createQueue(queueName: string) {
-        await this.sqs.create(queueName);
+        const span = startSpan(this.createQueue.name, SpanKind.SERVER);
+
+        try {
+            await this.sqs.create(queueName, span);
+        } catch (error: any) {
+            span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+            span.recordException(error);
+
+            throw error;
+        } finally {
+            span.end();
+        }        
     }
 
     public async bindTopic(binder: BindTopicInput) {
-        const topicOutput = await this.sns.create(binder.TopicName);
+        const span = startSpan(this.createQueue.name, SpanKind.SERVER);
 
-        if(topicOutput.Created) {
-            await this.sqs.linkTopicQueuePolicy(binder.QueueName, binder.TopicName);
-            await this.sns.subscribeEndpoints(binder.TopicName, binder.QueueName);
+        try {
+            const topicOutput = await this.sns.create(binder.TopicName, span);
+
+            if(topicOutput.Created) {
+                const policy = await this.sqs.linkTopicQueuePolicy(binder.QueueName, binder.TopicName);
+                span.addEvent('queue-policy-linked', { policy: JSON.stringify(policy) })
+
+                const arn = await this.sns.subscribeEndpoints(binder.TopicName, binder.QueueName);
+                span.addEvent('endpoint-subscribed', { arn });
+            }
+        } catch (error: any) {
+            span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+            span.recordException(error);
+
+            throw error;
+        } finally {
+            span.end();
         }
+        
     }
 }
