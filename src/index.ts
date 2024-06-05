@@ -1,7 +1,7 @@
-export { Bus } from './services/Bus';
-import { Configuration } from './utils/Configuration';
-import { Infrastructure } from './infrastructure/Infrastructure';
-import { ConfigureEndpoint, TagsResourceInput } from "./utils/types";
+export { Bus } from './aws-provider/services/Bus';
+import { Configuration } from './aws-provider/utils/Configuration';
+import { Infrastructure } from './aws-provider/infrastructure/Infrastructure';
+import { ConfigureEndpoint, TagsResourceInput } from "./aws-provider/utils/types";
 import opentelemetry from '@opentelemetry/api';
 
 export class MessageBus {
