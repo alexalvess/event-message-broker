@@ -6,9 +6,8 @@ import { RabbitMqContext } from './RabbitMqContext';
 export class RabbitMqInfrastructure implements IInfrastructure {
     private channel: Channel;
 
-    public async use() {
-        this.channel = await RabbitMqContext.configureContext();
-        return this;
+    constructor(channel: Channel) {
+        this.channel = channel;
     }
 
     public async createQueue(queueName: string): Promise<void> {

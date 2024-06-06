@@ -6,19 +6,26 @@ import { TagsResourceInput } from './application/utils/types';
 import { AWSInfrastructure } from './aws-provider/infrastructure/AWSInfrastructure';
 import { ConfigureEndpoint } from "./aws-provider/utils/types";
 import { RabbitMqInfrastructure } from './rabbitmq-provider/infrastructure/RabbitMqInfrastructure';
+import { RabbitMQBus } from './rabbitmq-provider/services/RabbitMQBus';
+import { RabbitMqContext } from './rabbitmq-provider/infrastructure/RabbitMqContext';
 
 export class MessageBus {
     private static infrastructure: IInfrastructure;
     private static bus: IBus;
 
-    public static async useAws() {
-        this.infrastructure = await new AWSInfrastructure().use();
+    public static useAws() {
+        this.infrastructure = new AWSInfrastructure();
         this.bus = new AWSBus();
         return this;
     }
 
     public static async useRabbitMq() {
-        this.infrastructure = await new RabbitMqInfrastructure().use();
+        const channel = await RabbitMqContext.configureContext();
+
+        this.infrastructure = new RabbitMqInfrastructure(channel);
+        this.bus = new RabbitMQBus(channel);
+
+        return this;
     }
 
     public static configureTags(tags: TagsResourceInput) {

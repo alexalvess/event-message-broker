@@ -14,10 +14,6 @@ export class AWSInfrastructure implements IInfrastructure {
         this.sqs = new SQSInfrastructure();
     }
 
-    public async use() {
-        return this;
-    }
-
     public async createQueue(queueName: string) {
         const span = startSpan(this.createQueue.name, SpanKind.SERVER);
 
