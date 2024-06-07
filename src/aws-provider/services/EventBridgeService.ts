@@ -28,7 +28,8 @@ export class EventBridgeService extends SchedulerClient {
             FlexibleTimeWindow: {
                 Mode: 'OFF'
             },
-            ScheduleExpression: `at(${params.ScheduleDate.toISOString()})`
+            ScheduleExpression: `at(${params.ScheduleDate.toISOString()})`,
+            ActionAfterCompletion: 'DELETE'
         });
 
         const output = await this.send(command);

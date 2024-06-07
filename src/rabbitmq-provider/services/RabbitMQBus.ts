@@ -50,12 +50,31 @@ export class RabbitMQBus implements IBus {
     }
 
     public async redelivery<TMessageContext extends MessageContext<TMessage>, TMessage extends GenericMessage>(params: RedeliveryInput<TMessageContext, TMessage>): Promise<void> {
+        const confirmChannel = await this.channel.connection.createConfirmChannel();
 
+        return new Promise((resolve, reject) => {
+            confirmChannel.sendToQueue(
+                params.QueueName,
+                Buffer.from(JSON.stringify(params.Message.Content)),
+                {
+                    headers: { 
+                        'x-defer-until': Date.now() + params.DelaySeconds
+                    }
+                },
+                (error, _) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve();
+                    }
+                }
+            )
+        });
     }
 
     public async schedule<TMessage extends GenericMessage>(params: ScheduleInput<TMessage>): Promise<void> {
         const confirmChannel = await this.channel.connection.createConfirmChannel();
-        
+
         return new Promise((resolve, reject) => {
             try {
                 confirmChannel.publish(

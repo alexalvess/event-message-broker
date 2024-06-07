@@ -11,11 +11,27 @@ export class RabbitMqInfrastructure implements IInfrastructure {
     }
 
     public async createQueue(queueName: string): Promise<void> {
-        await this.channel.assertQueue(queueName, { durable: false });
+        await this.channel.assertQueue(queueName, { durable: true });
     }
 
     public async bindTopic(binder: BindTopicInput): Promise<void> {
-        await this.channel.assertExchange(binder.TopicName, 'direct', { durable: false });
+        await this.channel.assertExchange(
+            binder.TopicName, 
+            'direct', 
+            binder.DelayedQueue 
+                ? 
+                    { 
+                        durable: true, 
+                        arguments: { 
+                            'x-delayed-type': 'direct' 
+                        } 
+                    }
+                : 
+                    { 
+                        durable: true 
+                    }
+        );
+
         await this.channel.bindQueue(binder.QueueName, binder.TopicName, 'msg');
     }
 }
