@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { GenericContainer, Wait } from 'testcontainers';
+import { GenericContainer, StartedTestContainer, Wait } from 'testcontainers';
 import { MessageBus } from '../../../src';
 
-let container: any;
+let container: StartedTestContainer;
 
 beforeAll(async () => {
     if(process.env.ENVIRONMENT_TEST !== 'containers') {
@@ -22,11 +22,16 @@ beforeAll(async () => {
     } else if(process.env.PROVIDER_TEST === 'rabbitmq') {        
         container = await new GenericContainer('rabbitmq:3-management')
             .withExposedPorts(5672, 15672)
-            .withEnvironment({ RABBITMQ_DEFAULT_USER: 'guest' })
-            .withEnvironment({ RABBITMQ_DEFAULT_PASS: 'guest' })
-            .withEnvironment({ RABBITMQ_PLUGINS: 'rabbitmq_management rabbitmq_delayed_message_exchange rabbitmq_defer' })
+            .withEnvironment({ 
+                RABBITMQ_DEFAULT_USER: process.env.RABBITMQ_USER ?? '',
+                RABBITMQ_DEFAULT_PASS: process.env.RABBITMQ_PASS ?? '',
+                RABBITMQ_PLUGINS: 'rabbitmq_management rabbitmq_delayed_message_exchange rabbitmq_defer'
+            })
             .withWaitStrategy(Wait.forLogMessage('Ready.'))
             .start();
+
+        process.env.RABBITMQ_HOST = container.getHost();
+        process.env.RABBITMQ_PORT = container.getMappedPort(15672).toString();
 
         MessageBus.useRabbitMq();
     }
