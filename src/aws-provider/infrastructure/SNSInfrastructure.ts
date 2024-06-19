@@ -14,7 +14,7 @@ import {
 import { 
     CreateTopicOutput
 } from '../utils/types';
-import { Configuration } from '../../application/utils/Configuration';
+import { Configuration } from '../../application/utils/configuration';
 import { Span } from '@opentelemetry/api';
 
 export class SNSInfrastructure {

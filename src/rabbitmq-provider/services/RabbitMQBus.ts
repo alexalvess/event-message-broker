@@ -100,7 +100,7 @@ export class RabbitMQBus implements IBus {
     }
 
     public consume<TMessage extends GenericMessage>(params: ConsumerParams<TMessage>): void {
-
+        console.log(params);
     }
 
 }

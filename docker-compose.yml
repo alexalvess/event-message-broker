@@ -1,29 +1,46 @@
 version: '3'
+
 services:
-  datadog:
-    image: datadog/agent:latest
-    environment:
-      - DD_API_KEY=${DATADOG_API_KEY}
-      - DD_SITE=datadoghq.eu
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /proc/:/host/proc/:ro
-      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
-      RABBITMQ_PLUGINS: "rabbitmq_management rabbitmq_delayed_message_exchange rabbitmq_defer"
+  jaeger:
+    image: jaegertracing/all-in-one
+    ports: 
+      - 5775:5775
+      - 6831:6831
+      - 6832:6832
+      - 5778:5778
+      - 16686:16686
+      - 14268:14268
+      - 14250:14250
+      - 9411:9411
+    deploy:
+      restart_policy:
+        condition: on-failure
+  
+  prometheus:
+    image: prom/prometheus
+    volumes: 
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports: 
+      - 9090:9090
+  
+  collector-gateway:
+    image: otel/opentelemetry-collector-contrib
+    volumes: 
+      - ./config/collector-gateway.yml:/etc/otel-collector-config.yaml
+    command: ["--config=/etc/otel-collector-config.yaml"]
     ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
-      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-
-volumes:
-  rabbitmq_data:
+      - "1888:1888"
+      - "8888:8888"
+      - "8889:8889"
+      - "13133:13133"
+      - "4320:4320"
+      - "4319:4319"
+      - "55670:55679"
+  
+  collector-agent:
+    image: otel/opentelemetry-collector:0.29.0
+    volumes: 
+      - ./config/collector-agent.yml:/etc/otel-collector-config.yaml
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    ports:
+      - "4318:4318"

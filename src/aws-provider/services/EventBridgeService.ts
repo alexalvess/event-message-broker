@@ -10,7 +10,7 @@ import { TOPIC_ARN_TEMPLATE } from "../utils/constants";
 import { 
     ScheduleOutput 
 } from '../utils/types';
-import { Configuration } from "../../application/utils/Configuration";
+import { Configuration } from "../../application/utils/configuration";
 import { GenericMessage, ScheduleInput } from "../../application/utils/types";
 
 export class EventBridgeService extends SchedulerClient {

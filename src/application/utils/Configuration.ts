@@ -1,4 +1,4 @@
-import { TagsResourceInput } from '../utils/types';
+import { TagsResourceInput } from './types';
 
 export class Configuration {
     private static _tags: TagsResourceInput = [
