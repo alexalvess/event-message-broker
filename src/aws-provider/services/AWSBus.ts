@@ -7,7 +7,7 @@ import { SNSService } from "./SNSService";
 import { SQSService } from "./SQSService";
 import { Span, SpanKind, SpanStatusCode } from '@opentelemetry/api';
 
-export class Bus implements IBus {
+export class AWSBus implements IBus {
     private readonly eventBridge = new EventBridgeService();
     private readonly sqs = new SQSService();
     private readonly sns = new SNSService();

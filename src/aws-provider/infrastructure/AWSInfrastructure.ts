@@ -5,7 +5,7 @@ import { SNSInfrastructure } from "./SNSInfrastructure";
 import { SQSInfrastructure } from "./SQSInfrastructure";
 import { SpanKind, SpanStatusCode } from '@opentelemetry/api';
 
-export class Infrastructure implements IInfrastructure {
+export class AWSInfrastructure implements IInfrastructure {
     private readonly sns: SNSInfrastructure;
     private readonly sqs: SQSInfrastructure;
 

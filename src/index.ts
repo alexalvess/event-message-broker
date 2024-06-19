@@ -1,10 +1,13 @@
-import { Bus as AWSBus } from './aws-provider/services/Bus';
+import { AWSBus } from './aws-provider/services/AWSBus';
 import { IBus } from './application/iBus';
 import { IInfrastructure } from './application/iInfrastructure';
-import { Configuration } from './application/utils/Configuration';
+import { Configuration } from './application/utils/configuration';
 import { TagsResourceInput } from './application/utils/types';
-import { Infrastructure as AWSInfrastructure } from './aws-provider/infrastructure/Infrastructure';
+import { AWSInfrastructure } from './aws-provider/infrastructure/AWSInfrastructure';
 import { ConfigureEndpoint } from "./aws-provider/utils/types";
+import { RabbitMqInfrastructure } from './rabbitmq-provider/infrastructure/RabbitMqInfrastructure';
+import { RabbitMQBus } from './rabbitmq-provider/services/RabbitMQBus';
+import { RabbitMqContext } from './rabbitmq-provider/infrastructure/RabbitMqContext';
 
 export class MessageBus {
     private static infrastructure: IInfrastructure;
@@ -13,13 +16,25 @@ export class MessageBus {
     public static useAws() {
         this.infrastructure = new AWSInfrastructure();
         this.bus = new AWSBus();
+        return this;
+    }
+
+    public static async useRabbitMq() {
+        const channel = await RabbitMqContext.configureContext();
+
+        this.infrastructure = new RabbitMqInfrastructure(channel);
+        this.bus = new RabbitMQBus(channel);
 
         return this;
     }
 
     public static configureTags(tags: TagsResourceInput) {
         Configuration.pushTags(tags);
+        return this;
+    }
 
+    public static configurePrefetch(prefetch: number) {
+        Configuration.configurePrefetch(prefetch);
         return this;
     }
 
