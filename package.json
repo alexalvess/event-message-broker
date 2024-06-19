@@ -1,6 +1,6 @@
 {
-  "name": "aws-message-bus-package",
-  "version": "1.0.30",
+  "name": "event-broadcast",
+  "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alexalvess/aws-message-bus-package.git"
+    "url": "https://github.com/alexalvess/event-broadcast.git"
   },
   "dependencies": {
     "@aws-sdk/client-scheduler": "^3.583.0",
@@ -69,6 +69,7 @@
     "amazon",
     "sqs",
     "sns",
-    "eventBridge"
+    "eventBridge",
+    "rabbitmq"
   ]
 }
