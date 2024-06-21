@@ -85,7 +85,7 @@ export class SQSService {
                     await params.handle(message);
 
                     span.addEvent('message-consumed', {
-                        correlationId: message.Content.CorrelationId
+                        correlationId: message.Object.CorrelationId
                     });
                 } catch (error: any) {
                     await this.secondLevelResilience({
@@ -111,7 +111,7 @@ export class SQSService {
                 messageContent = JSON.parse(messageContent.Message);
             }
 
-            message.Content = messageContent;
+            message.Object = messageContent;
         }
     }
 
@@ -122,7 +122,7 @@ export class SQSService {
 
         await this.send(
             retryCount <= params.MaxRetryCount ? params.QueueName : `${params.QueueName}-dlq`,
-            params.Message.Content,
+            params.Message.Object,
             {
                 DelaySeconds: retryCount <= params.MaxRetryCount ? params.DelaySeconds : 0,
                 MessageAttributes: {

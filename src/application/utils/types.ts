@@ -20,7 +20,7 @@ export class ScheduleInput<TMessage extends Object> {
 }
 
 export interface MessageContext<TMessage extends object> {
-    Content: TMessage;
+    Object: TMessage;
 }
 
 export type SecondLevelResilienceInput<TMessageContext extends MessageContext<TMessage>, TMessage extends Object> = {

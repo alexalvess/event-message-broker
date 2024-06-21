@@ -26,7 +26,7 @@ export class RabbitMqInfrastructure implements IInfrastructure {
             }
         );
 
-        await this.channel.bindQueue(binder.QueueName, binder.TopicName, 'msg');
+        await this.channel.bindQueue(binder.QueueName, binder.TopicName, '*');
     }
 
     public async bindTemporaryTopic(queueName: string): Promise<string> {
@@ -43,13 +43,13 @@ export class RabbitMqInfrastructure implements IInfrastructure {
             }
         );
 
-        await this.channel.bindQueue(queueName, topicName, 'msg');
+        await this.channel.bindQueue(queueName, topicName, '*');
 
         return topicName;
     }
 
-    public async deleteTemporaryTopic(queueName: string, topicName: string): Promise<void> {
-        this.channel.unbindQueue(queueName, topicName, 'msg');
+    public async deleteTopic(queueName: string, topicName: string): Promise<void> {
+        this.channel.unbindQueue(queueName, topicName, '*');
         await this.channel.deleteExchange(topicName);
     }
 }
