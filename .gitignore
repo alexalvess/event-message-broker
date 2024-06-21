@@ -41,7 +41,8 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
-rabbitmq/
+data/
+build/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
