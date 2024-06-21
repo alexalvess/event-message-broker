@@ -1,7 +1,7 @@
 import { Channel } from 'amqplib';
 import { IInfrastructure } from '../../application/iInfrastructure';
 import { BindTopicInput } from '../../application/utils/types';
-import { RabbitMqContext } from './RabbitMqContext';
+import { v4 as uuidV4 } from 'uuid';
 
 export class RabbitMqInfrastructure implements IInfrastructure {
     private channel: Channel;
@@ -18,20 +18,38 @@ export class RabbitMqInfrastructure implements IInfrastructure {
         await this.channel.assertExchange(
             binder.TopicName, 
             'direct', 
-            binder.DelayedQueue 
-                ? 
-                    { 
-                        durable: true, 
-                        arguments: { 
-                            'x-delayed-type': 'direct' 
-                        } 
-                    }
-                : 
-                    { 
-                        durable: true 
-                    }
+            { 
+                durable: true, 
+                arguments: { 
+                    'x-delayed-type': 'direct' 
+                } 
+            }
         );
 
         await this.channel.bindQueue(binder.QueueName, binder.TopicName, 'msg');
+    }
+
+    public async bindTemporaryTopic(queueName: string): Promise<string> {
+        const topicName = `${uuidV4}-temporary-exchange`;
+
+        await this.channel.assertExchange(
+            topicName, 
+            'direct', 
+            { 
+                durable: true, 
+                arguments: { 
+                    'x-delayed-type': 'direct' 
+                }
+            }
+        );
+
+        await this.channel.bindQueue(queueName, topicName, 'msg');
+
+        return topicName;
+    }
+
+    public async deleteTemporaryTopic(queueName: string, topicName: string): Promise<void> {
+        this.channel.unbindQueue(queueName, topicName, 'msg');
+        await this.channel.deleteExchange(topicName);
     }
 }

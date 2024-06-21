@@ -1,6 +1,7 @@
 import { Channel, ConfirmChannel } from "amqplib";
 import { IBus } from "../../application/iBus";
 import { GenericMessage, MessageContext, RedeliveryInput, ScheduleInput, ConsumerParams } from "../../application/utils/types";
+import { RabbitMqInfrastructure } from "../infrastructure/RabbitMqInfrastructure";
 
 export class RabbitMQBus implements IBus {
     private readonly channel: Channel;
@@ -52,23 +53,26 @@ export class RabbitMQBus implements IBus {
     public async redelivery<TMessageContext extends MessageContext<TMessage>, TMessage extends GenericMessage>(params: RedeliveryInput<TMessageContext, TMessage>): Promise<void> {
         const confirmChannel = await this.channel.connection.createConfirmChannel();
 
-        return new Promise((resolve, reject) => {
-            confirmChannel.sendToQueue(
-                params.QueueName,
-                Buffer.from(JSON.stringify(params.Message.Content)),
+        const infra = new RabbitMqInfrastructure(this.channel);
+        const temporaryTopic = await infra.bindTemporaryTopic(params.QueueName);
+
+        await new Promise<void>((resolve, reject) => {
+            confirmChannel.publish(
+                temporaryTopic,
+                'msg',
+                Buffer.from(JSON.stringify(params.Message)), 
                 {
-                    headers: { 
-                        'x-defer-until': Date.now() + params.DelaySeconds
+                    headers: {
+                        'x-delay': params.DelaySeconds * 1000
                     }
-                },
+                }, 
                 (error, _) => {
                     if (error) {
                         reject(error);
                     } else {
                         resolve();
                     }
-                }
-            )
+                });
         });
     }
 

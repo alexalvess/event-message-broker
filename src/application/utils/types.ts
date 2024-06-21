@@ -6,7 +6,6 @@ export type GenericMessage = {
 export type BindTopicInput = {
     TopicName: string;
     QueueName: string;
-    DelayedQueue?: boolean;
 }
 
 export type TagsResourceInput = Array<{

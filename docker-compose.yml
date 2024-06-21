@@ -1,18 +1,14 @@
-version: '3'
+version: '3.8'
 
 services:
   rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-      RABBITMQ_PLUGINS: "rabbitmq_management rabbitmq_delayed_message_exchange rabbitmq_defer"
+    image: heidiks/rabbitmq-delayed-message-exchange:latest
     ports:
       - "5672:5672"
       - "15672:15672"
-    volumes:
-      - ./data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
 
   jaeger:
     image: jaegertracing/all-in-one
