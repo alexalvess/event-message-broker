@@ -21,14 +21,16 @@ jobs:
       with:
         node-version: "20"
 
+    - name: Configure Git credentials
+      run: |
+        git config --global user.email "alexalves2501@hotmail.com"
+        git config --global user.name "github-actions[bot]"
+
     - name: Patch Version Package
       run: npm version patch
 
     - name: Commit changes
-      run: |  
-        git config --global user.email "alexalves2501@hotmail.com"
-        git config --global user.name "github-actions[bot]"
-        git commit -a -m "Update pkg version"
+      run: git commit -a -m "Update pkg version"
 
     - name: Push changes
       uses: ad-m/github-push-action@master
@@ -69,7 +71,7 @@ jobs:
     - name: Configure Git credentials
       run: |
         git config --global user.email "alexalves2501@hotmail.com"
-        git config --global user.name "Alex Alves"
+        git config --global user.name "github-actions[bot]"
 
     - name: Extract package version
       id: version
