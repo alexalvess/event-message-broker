@@ -12,6 +12,9 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+        fetch-depth: 0
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -20,6 +23,22 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
+
+    - name: Publish to NPM
+      run: npm build
+
+    - name: Patch Version Package
+      run: |
+        npm version patch
+        git config --local user.email "alexalves2501@hotmail.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -a -m "Update pkg version"
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
 
     - name: Set up npm authentication
       run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
@@ -31,7 +50,7 @@ jobs:
 
   create_tag_and_release:
     runs-on: ubuntu-latest
-    # needs: publish
+    needs: publish
 
     steps:
     - name: Checkout code
