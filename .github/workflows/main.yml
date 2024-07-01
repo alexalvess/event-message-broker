@@ -24,8 +24,8 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
-    - name: Publish to NPM
-      run: npm build
+    - name: Build Package
+      run: npm run build
 
     - name: Patch Version Package
       run: |
