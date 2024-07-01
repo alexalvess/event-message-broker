@@ -21,12 +21,6 @@ jobs:
       with:
         node-version: "20"
 
-    - name: Install Dependencies
-      run: npm install
-
-    - name: Build Package
-      run: npm run build
-
     - name: Patch Version Package
       run: |
         npm version patch
@@ -40,6 +34,12 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ github.ref }}
 
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Build Package
+      run: npm run build
+    
     - name: Set up npm authentication
       run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
 
