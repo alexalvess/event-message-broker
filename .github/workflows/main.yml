@@ -22,8 +22,10 @@ jobs:
         node-version: "20"
 
     - name: Patch Version Package
-      run: |
-        npm version patch
+      run: npm version patch
+
+    - name: Commit changes
+      run: |  
         git config --global user.email "alexalves2501@hotmail.com"
         git config --global user.name "github-actions[bot]"
         git commit -a -m "Update pkg version"
