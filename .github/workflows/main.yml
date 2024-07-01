@@ -24,8 +24,8 @@ jobs:
     - name: Patch Version Package
       run: |
         npm version patch
-        git config --local user.email "alexalves2501@hotmail.com"
-        git config --local user.name "github-actions[bot]"
+        git config --global user.email "alexalves2501@hotmail.com"
+        git config --global user.name "github-actions[bot]"
         git commit -a -m "Update pkg version"
 
     - name: Push changes
