@@ -1,6 +1,6 @@
 {
-  "name": "event-broadcast",
-  "version": "1.0.1",
+  "name": "event-message-broker",
+  "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alexalvess/event-broadcast.git"
+    "url": "https://github.com/alexalvess/event-broadcast"
   },
   "dependencies": {
     "@aws-sdk/client-scheduler": "^3.583.0",
