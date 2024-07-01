@@ -34,7 +34,6 @@ jobs:
         git config --global user.email "alexalves2501@hotmail.com"
         git config --global user.name "Alex Alves"
 
-jobs:
   create_tag_and_release:
     runs-on: ubuntu-latest
 
