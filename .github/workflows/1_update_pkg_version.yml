@@ -27,8 +27,20 @@ jobs:
         git config --global user.email "alexalves2501@hotmail.com"
         git config --global user.name "github-actions[bot]"
 
+    - name: Determine branch name
+      id: branch_name
+      run: |
+        branch_ref="${GITHUB_REF#refs/heads/}"
+        branch_name="${branch_ref##*/}"
+        echo "::set-output name=branch_name::${branch_name}"
+
     - name: Patch Version Package
-      run: npm version patch
+      run: |
+        if [ "${{ steps.branch_name.outputs.branch_name }}" = "main" ]; then
+          npm version patch
+        else
+          npm version prepatch --preid=beta
+        fi
 
     - name: Push changes
       uses: ad-m/github-push-action@master
