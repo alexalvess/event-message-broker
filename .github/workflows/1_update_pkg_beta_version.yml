@@ -3,7 +3,7 @@ name: Publish to NPM
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    branches:
+    branches-ignore:
       - main
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
         git config --global user.name "github-actions[bot]"
 
     - name: Patch Version Package
-      run: npm version patch
+      run: npm version prepatch --preid=beta
 
     - name: Push changes
       uses: ad-m/github-push-action@master
