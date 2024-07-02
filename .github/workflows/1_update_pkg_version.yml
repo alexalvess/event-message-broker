@@ -29,7 +29,10 @@ jobs:
 
     - name: Determine branch name
       id: branch_name
-      run: echo ::set-output name=branch_name::${GITHUB_REF#refs/heads/}
+      run: |
+        branch_ref="${GITHUB_REF#refs/heads/}"
+        branch_name="${branch_ref##*/}"
+        echo "::set-output name=branch_name::${branch_name}"
 
     - name: Patch Version Package
       run: |
