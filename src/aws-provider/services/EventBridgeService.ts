@@ -11,7 +11,7 @@ import {
     ScheduleOutput 
 } from '../utils/types';
 import { GenericMessage, ScheduleInput } from "../../application/utils/types";
-import { Configuration } from "../../application/utils/configuration";
+import { Configuration } from "../../application/utils/configurations";
 
 export class EventBridgeService extends SchedulerClient {
     public async schedule<TMessage extends GenericMessage>(params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {

@@ -11,7 +11,7 @@ import { Consumer } from "sqs-consumer";
 import { startSpan } from "../../application/utils/o11y";
 import { SpanKind } from '@opentelemetry/api';
 import { ConsumerParams, GenericMessage, RedeliveryInput, SecondLevelResilienceInput } from "../../application/utils/types";
-import { Configuration } from "../../application/utils/configuration";
+import { Configuration } from "../../application/utils/configurations";
 
 export class SQSService {
     private readonly client: SQSClient;

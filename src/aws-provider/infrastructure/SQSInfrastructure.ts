@@ -13,7 +13,7 @@ import {
 } from "../utils/constants";
 
 import { CreateQueueOutput } from '../utils/types';
-import { Configuration } from "../../application/utils/configuration";
+import { Configuration } from "../../application/utils/configurations";
 import { Span } from '@opentelemetry/api';
 
 export class SQSInfrastructure {

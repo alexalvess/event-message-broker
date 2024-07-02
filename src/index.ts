@@ -1,7 +1,7 @@
 import { AWSBus } from './aws-provider/services/AWSBus';
 import { IBus } from './application/iBus';
 import { IInfrastructure } from './application/iInfrastructure';
-import { Configuration } from './application/utils/configuration';
+import { Configuration } from './application/utils/configurations';
 import { TagsResourceInput } from './application/utils/types';
 import { AWSInfrastructure } from './aws-provider/infrastructure/AWSInfrastructure';
 import { ConfigureEndpoint } from "./aws-provider/utils/types";

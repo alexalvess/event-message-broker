@@ -1,5 +1,5 @@
 import amqp, { Channel, Connection } from "amqplib";
-import { Configuration } from "../../application/utils/configuration";
+import { Configuration } from "../../application/utils/configurations";
 
 export class RabbitMqContext {
     public static async configureContext() {
