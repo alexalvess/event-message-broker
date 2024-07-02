@@ -57,7 +57,7 @@ export class AWSBus implements IBus {
             span.addEvent('message-redelivered', {
                 provider: 'aws-sqs',
                 messageId: output.messageId,
-                correlationId: params.Message.Content.CorrelationId,
+                correlationId: params.Message.Object.CorrelationId,
                 delay: params.DelaySeconds + 's',
                 attempt: output.attempt,
                 startsAt: output.startsAt

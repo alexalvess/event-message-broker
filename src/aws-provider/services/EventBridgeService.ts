@@ -10,8 +10,8 @@ import { TOPIC_ARN_TEMPLATE } from "../utils/constants";
 import { 
     ScheduleOutput 
 } from '../utils/types';
-import { Configuration } from "../../application/utils/configuration";
 import { GenericMessage, ScheduleInput } from "../../application/utils/types";
+import { Configuration } from "../../application/utils/configuration";
 
 export class EventBridgeService extends SchedulerClient {
     public async schedule<TMessage extends GenericMessage>(params: ScheduleInput<TMessage>): Promise<ScheduleOutput> {
