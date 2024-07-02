@@ -20,9 +20,6 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Install dependencies
-      run: npm install
-
     - name: Configure Git credentials
       run: |
         git config --global user.email "alexalves2501@hotmail.com"
@@ -53,3 +50,32 @@ jobs:
           Release ${{ steps.version.outputs.version }}
         draft: false
         prerelease: false
+
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Build Package
+      run: npm run build
+    
+    - name: Set up npm authentication
+      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
+
+    - name: Publish to NPM
+      run: npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
