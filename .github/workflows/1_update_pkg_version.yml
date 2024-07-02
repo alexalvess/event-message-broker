@@ -29,14 +29,12 @@ jobs:
 
     - name: Determine branch name
       id: branch_name
-      run: |
-        branch_ref="${GITHUB_REF#refs/heads/}"
-        branch_name="${branch_ref##*/}"
-        echo "::set-output name=branch_name::${branch_name}"
+      run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+
 
     - name: Patch Version Package
       run: |
-        if [ "${{ steps.branch_name.outputs.branch_name }}" = "main" ]; then
+        if [ "${{ steps.branch_name.outputs.branch }}" = "main" ]; then
           npm version patch
         else
           npm version prepatch --preid=beta
