@@ -54,8 +54,20 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         tags: v${{ steps.version.outputs.version }}
 
+    - name: Check if release already exists
+      id: check_release
+      run: |
+        release_id=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -X GET "https://api.github.com/repos/${{ github.repository }}/releases/tags/v${{ steps.version.outputs.version }}" | jq -r '.id // empty')
+        if [ -n "$release_id" ]; then
+          echo "Release v${{ steps.version.outputs.version }} already exists"
+          echo "::set-output name=release_exists::true"
+        else
+          echo "Release v${{ steps.version.outputs.version }} does not exist"
+          echo "::set-output name=release_exists::false"
+        fi
+
     - name: Create release
-      if: env.exists == 'false'
+      if: env.exists == 'false' && steps.check_release.outputs.release_exists != 'true'
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -70,6 +82,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
+    needs: create_tag_and_release
 
     steps:
     - name: Checkout Repository
