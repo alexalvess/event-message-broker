@@ -14,5 +14,4 @@ jobs:
     if: ${{ github.event.pull_request.merged == false }}
     uses: ./update_pkg.yml
     with:
-      job-name: Downgrade Version
       version-command: npm version ${{ needs.downgrade_pkg_version.outputs.previousVersion }}
