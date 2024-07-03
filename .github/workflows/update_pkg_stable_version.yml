@@ -1,0 +1,27 @@
+name: Update package - stable version
+
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  update_pkg_stable_version:
+    name: Update package - Stable Version
+    uses: ./update_pkg.yml
+    with:
+      version-command: |
+        if [[ "${{ github.head_ref }}" == "fix/"* ]]; then
+          npm version patch --no-git-tag-version
+        elif [[ "${{ github.head_ref }}" == "feature/"* ]]; then
+          npm version minor --no-git-tag-version
+        elif [[ "${{ github.head_ref }}" == "release/"* || "${{ github.head_ref }}" == "major/"* ]]; then
+          npm version major --no-git-tag-version
+        else
+          echo "Branch not recognized for automatic versioning."
+          exit 1
+        fi

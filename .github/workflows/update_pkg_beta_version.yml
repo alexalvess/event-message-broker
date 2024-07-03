@@ -1,0 +1,22 @@
+name: Update package - beta version
+
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches-ignore:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  update_pkg_beta_version:
+    name: Update package - Stable Version
+    uses: ./update_pkg.yml
+    with:
+      version-command: |
+        if [ "${{ needs.update_pkg_beta_version.outputs.is_beta }}" == "true" ]; then
+          npm version prerelease --preid=beta --no-git-tag-version
+        else
+          npm version prepatch --preid=beta --no-git-tag-version
+        fi
