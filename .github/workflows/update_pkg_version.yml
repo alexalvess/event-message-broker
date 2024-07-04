@@ -20,7 +20,7 @@ permissions:
 jobs:
   update_pkg_stable_version:
     name: Update package - Manual
-    uses: ./update_pkg.yml
+    uses: ./.github/workflows/update_pkg.yml@${{ github.ref_name }}
     with:
       version-command: |
         if [[ "${{ github.event.inputs.version-type }}" == "patch" ]]; then
