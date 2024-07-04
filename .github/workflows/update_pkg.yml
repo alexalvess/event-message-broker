@@ -53,12 +53,21 @@ jobs:
         fi
     
     - name: Save Current Version
-      run: node -e "const fs = require('fs'); let pkg = JSON.parse(fs.readFileSync('./package.json')); pkg['previousVersion'] = '${{ env.version }}'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+      run: |
+        node -e "
+        const fs = require('fs');
+        const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+        if (!pkg.previousVersions) {
+          pkg.previousVersions = [];
+        }
+        pkg.previousVersions.push('${{ env.version }}');
+        fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+        "
 
     - name: Extract package pervious version
       id: extract_previous_version
       run: |
-        previousVersion=$(node -e 'console.log(require("./package.json").previousVersion)')
+        previousVersion=$(node -e 'console.log(require("./package.json").previousVersions.slice(-1)[0])')
         echo "previousVersion=${previousVersion}" >> $GITHUB_ENV
 
     - name: Patch Version Package
