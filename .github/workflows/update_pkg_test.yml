@@ -42,14 +42,8 @@ jobs:
     - name: Extract package version
       id: extract_version
       run: |
-        VERSION=$(node -e "console.log(require('./package.json').version)")
-        echo "version=${VERSION}" >> $GITHUB_ENV
-    
-    - name: Extract package pervious version
-      id: extract_previous_version
-      run: |
-            previousVersion=$(node -e 'console.log(require("./package.json").previousVersion)')
-            echo "previousVersion=${previousVersion}" >> $GITHUB_ENV
+        version=$(node -e "console.log(require('./package.json').version)")
+        echo "version=${version}" >> $GITHUB_ENV
 
     - name: Chech if is beta version
       id: check_version
@@ -62,6 +56,12 @@ jobs:
     
     - name: Save Current Version
       run: node -e "const fs = require('fs'); let pkg = JSON.parse(fs.readFileSync('./package.json')); pkg['previousVersion'] = '${{ env.version }}'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+
+    - name: Extract package pervious version
+      id: extract_previous_version
+      run: |
+            previousVersion=$(node -e 'console.log(require("./package.json").previousVersion)')
+            echo "previousVersion=${previousVersion}" >> $GITHUB_ENV
 
     - name: Patch Version Package
       run: |
@@ -76,7 +76,7 @@ jobs:
           exit 1
         fi
 
-    - name: Commit and Push changes
+    - name: Commit changes
       run: |
         git add .
         git commit -m "update version package"
@@ -85,4 +85,4 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.head_ref }}
+        branch: ${{ github.ref }}
