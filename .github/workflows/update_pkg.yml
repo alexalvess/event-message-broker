@@ -11,10 +11,6 @@ jobs:
   update_pkg_version:
     name: Update Version
     runs-on: ubuntu-latest
-    output:
-      is_beta: ${{ steps.check_version.outputs.is_beta }}
-      version: ${{ steps.extract_version.outputs.version }}
-      previousVersion: ${{ steps.extract_previous_version.outputs.previousVersion }}
 
     steps:
     - name: Checkout Repository
@@ -36,32 +32,33 @@ jobs:
     - name: Extract package version
       id: extract_version
       run: |
-        VERSION=$(node -e "console.log(require('./package.json').version)")
-        echo "::set-output name=version::${VERSION}"
+        version=$(node -e "console.log(require('./package.json').version)")
+        echo "version=${version}" >> $GITHUB_ENV
     
-    - name: Extract package pervious version
-      id: extract_previous_version
-      run: echo ::set-output name=previousVersion::$(node -e "console.log(require('./package.json').previousVersion)")
-
     - name: Chech if is beta version
       id: check_version
       run: |
-        if [[ "${{ steps.check_version.outputs.is_beta }}" == *"beta"* ]]; then
-          echo "::set-output name=is_beta::true"
+        if [[ "${{ env.version }}" == *"beta"* ]]; then
+          echo "is_beta=true" >> $GITHUB_ENV
         else
-          echo "::set-output name=is_beta::false"
-        fi
+          echo "is_beta=false" >> $GITHUB_ENV
     
     - name: Save Current Version
-      run: node -e "const fs = require('fs'); let pkg = JSON.parse(fs.readFileSync('./package.json')); pkg['previousVersion'] = '${{ steps.extract_version.outputs.version }}'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+      run: node -e "const fs = require('fs'); let pkg = JSON.parse(fs.readFileSync('./package.json')); pkg['previousVersion'] = '${{ env.version }}'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+
+    - name: Extract package pervious version
+      id: extract_previous_version
+      run: |
+        previousVersion=$(node -e 'console.log(require("./package.json").previousVersion)')
+        echo "previousVersion=${previousVersion}" >> $GITHUB_ENV
 
     - name: Patch Version Package
       run: ${{ inputs.version-command }}
 
-    - name: Commit and Push changes
+    - name: Commit changes
       run: |
         git add .
-        git commit -m "update version package"
+        git commit -m "Update Version Package"
 
     - name: Push changes
       uses: ad-m/github-push-action@master
