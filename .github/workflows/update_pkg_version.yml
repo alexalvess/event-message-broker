@@ -37,5 +37,4 @@ jobs:
     needs: update_pkg_version
     # if: ${{ github.event.inputs.publish-pkg == true }}
     uses: ./.github/workflows/publish_pkg.yml
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+    secrets: inherit
