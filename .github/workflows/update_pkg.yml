@@ -50,7 +50,7 @@ jobs:
         previousVersion=$(node -e 'console.log(require("./package.json").previousVersions.slice(-1)[0])')
         echo "previousVersion=${previousVersion}" >> $GITHUB_ENV
 
-    - name: Patch Version Package
+    - name: Update Version Package
       run: |
         if [[ "${{ inputs.command-type }}" == "patch" ]]; then
           npm version patch --no-git-tag-version
@@ -68,7 +68,7 @@ jobs:
           if [[ "${{ env.previousVersion }}" != "undefined" ]]; then
             npm version ${{ env.previousVersion }}
           else
-            echo "Error: previousVersion is empty. Cannot perform downgrade."
+            echo "Error: Does not exists Previous Version. Cannot perform downgrade."
             exit 1
           fi
         fi

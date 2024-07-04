@@ -2,6 +2,8 @@ name: Update package - manual version
 
 on:
   workflow_dispatch:
+    branches-ignore:
+      - main
     inputs:
       version-type:
         description: "Choose version type"
