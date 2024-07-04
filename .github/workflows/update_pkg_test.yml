@@ -47,7 +47,9 @@ jobs:
     
     - name: Extract package pervious version
       id: extract_previous_version
-      run: echo "previousVersion=$(node -e "console.log(require('./package.json').previousVersion))" >> $GITHUB_ENV
+      run: |
+            previousVersion=$(node -e 'console.log(require("./package.json").previousVersion)')
+            echo "previousVersion=${previousVersion}" >> $GITHUB_ENV
 
     - name: Chech if is beta version
       id: check_version
