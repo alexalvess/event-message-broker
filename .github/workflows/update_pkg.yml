@@ -1,9 +1,9 @@
-name: Update package version
+name: Update package version - Template
 
 on:
   workflow_call:
     inputs:
-      version-command:
+      command-type:
         required: true
         type: string
 
@@ -11,10 +11,6 @@ jobs:
   update_pkg_version:
     name: Update Version
     runs-on: ubuntu-latest
-    output:
-      is_beta: ${{ steps.check_version.outputs.is_beta }}
-      version: ${{ steps.extract_version.outputs.version }}
-      previousVersion: ${{ steps.extract_previous_version.outputs.previousVersion }}
 
     steps:
     - name: Checkout Repository
@@ -36,34 +32,98 @@ jobs:
     - name: Extract package version
       id: extract_version
       run: |
-        VERSION=$(node -e "console.log(require('./package.json').version)")
-        echo "::set-output name=version::${VERSION}"
+        version=$(node -e "console.log(require('./package.json').version)")
+        echo "version=${version}" >> $GITHUB_ENV
     
-    - name: Extract package pervious version
-      id: extract_previous_version
-      run: echo ::set-output name=previousVersion::$(node -e "console.log(require('./package.json').previousVersion)")
-
     - name: Chech if is beta version
       id: check_version
       run: |
-        if [[ "${{ steps.check_version.outputs.is_beta }}" == *"beta"* ]]; then
-          echo "::set-output name=is_beta::true"
+        if [[ "${{ env.version }}" == *"beta"* ]]; then
+          echo "is_beta=true" >> $GITHUB_ENV
         else
-          echo "::set-output name=is_beta::false"
+          echo "is_beta=false" >> $GITHUB_ENV
         fi
-    
+
+    - name: Extract package pervious version
+      id: extract_previous_version
+      run: |
+        previousVersion=$(node -e 'console.log(require("./package.json").previousVersions.slice(-1)[0])')
+        echo "previousVersion=${previousVersion}" >> $GITHUB_ENV
+
+    - name: Update Version Package
+      run: |
+        if [[ "${{ inputs.command-type }}" == "patch" ]]; then
+          npm version patch --no-git-tag-version
+        elif [[ "${{ inputs.command-type }}" == "minor" ]]; then
+          npm version minor --no-git-tag-version
+        elif [[ "${{ inputs.command-type }}" == "major" ]]; then
+          npm version major --no-git-tag-version
+        elif [[ "${{ inputs.command-type }}" == "beta" ]]; then
+          if [ "${{ env.is_beta }}" == "true" ]; then
+            npm version prerelease --preid=beta --no-git-tag-version
+          else
+            npm version prepatch --preid=beta --no-git-tag-version
+          fi
+        elif [[ "${{ inputs.command-type }}" == "downgrade" ]]; then
+          if [[ "${{ env.previousVersion }}" != "undefined" ]]; then
+            npm version ${{ env.previousVersion }}
+          else
+            echo "Error: Does not exists Previous Version. Cannot perform downgrade."
+            exit 1
+          fi
+        fi
+
+    - name: Remove last item from previousVersions
+      if: ${{ inputs.command-type == 'downgrade' }}
+      run: |
+        node -e "
+        const fs = require('fs');
+        const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+        
+        if (pkg.previousVersions && pkg.previousVersions.length > 0) {
+          pkg.previousVersions.pop(); // Remove last item
+        }
+        
+        fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+        "
+
     - name: Save Current Version
-      run: node -e "const fs = require('fs'); let pkg = JSON.parse(fs.readFileSync('./package.json')); pkg['previousVersion'] = '${{ steps.extract_version.outputs.version }}'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+      if: ${{ inputs.command-type != 'downgrade' }}
+      run: |
+        node -e "
+        const fs = require('fs');
+        const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+        
+        const newPkg = {};
+        Object.keys(pkg).forEach(key => {
+          newPkg[key] = pkg[key];
+          if (key === 'version') {
+            if (!pkg.previousVersions) {
+              newPkg.previousVersions = [];
+            } else {
+              newPkg.previousVersions = pkg.previousVersions;
+            }
+            newPkg.previousVersions.push('${{ env.version }}');
+          }
+        });
+        
+        fs.writeFileSync('./package.json', JSON.stringify(newPkg, null, 2));
+        "
 
-    - name: Patch Version Package
-      run: ${{ inputs.version-command }}
-
-    - name: Commit and Push changes
+    - name: Commit changes
       run: |
         git add .
-        git commit -m "update version package"
+        git commit -m "Update Version Package"
 
     - name: Push changes
+      if: github.event_name != 'pull_request'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+
+    - name: Push changes
+      if: github.event_name == 'pull_request'
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}

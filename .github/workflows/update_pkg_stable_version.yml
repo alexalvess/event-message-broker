@@ -2,26 +2,40 @@ name: Update package - stable version
 
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, synchronize, reopened]
     branches:
       - main
 
 permissions:
-  contents: read
+  contents: write
+  packages: write
 
 jobs:
+  determine_version_type:
+    name: Determine version type
+    runs-on: ubuntu-latest
+
+    outputs:
+      version_type: ${{ steps.determine_version.outputs.version_type }}
+    
+    steps:
+      - name: Identifying the type
+        id: determine_version
+        run: |
+          if [[ "${{ github.head_ref }}" == *"fix/"* ]]; then
+            echo "version_type=patch" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.head_ref }}" == *"feature/"* ]]; then
+            echo "version_type=minor" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.head_ref }}" == *"release/"* || "${{ github.head_ref }}" == *"major/"* ]]; then
+            echo "version_type=major" >> $GITHUB_OUTPUT
+          else
+            echo "Branch not recognized for automatic versioning."
+            exit 1
+          fi
+
   update_pkg_stable_version:
     name: Update package - Stable Version
-    uses: ./update_pkg.yml
+    needs: determine_version_type
+    uses: ./.github/workflows/update_pkg.yml
     with:
-      version-command: |
-        if [[ "${{ github.head_ref }}" == "fix/"* ]]; then
-          npm version patch --no-git-tag-version
-        elif [[ "${{ github.head_ref }}" == "feature/"* ]]; then
-          npm version minor --no-git-tag-version
-        elif [[ "${{ github.head_ref }}" == "release/"* || "${{ github.head_ref }}" == "major/"* ]]; then
-          npm version major --no-git-tag-version
-        else
-          echo "Branch not recognized for automatic versioning."
-          exit 1
-        fi
+      command-type: ${{ needs.determine_version_type.outputs.version_type }}
