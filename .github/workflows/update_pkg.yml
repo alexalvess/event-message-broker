@@ -65,7 +65,7 @@ jobs:
             npm version prepatch --preid=beta --no-git-tag-version
           fi
         elif [[ "${{ inputs.command-type }}" == "downgrade" ]]; then
-          if [[ -n "${{ env.previousVersion }}" ]]; then
+          if [[ "${{ env.previousVersion }}" != "undefined" ]]; then
             npm version ${{ env.previousVersion }}
           else
             echo "Error: previousVersion is empty. Cannot perform downgrade."
