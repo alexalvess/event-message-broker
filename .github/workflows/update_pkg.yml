@@ -7,9 +7,6 @@ on:
         required: true
         type: string
 
-env:
-  TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   update_pkg_version:
     name: Update Version
@@ -67,5 +64,5 @@ jobs:
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        github_token: ${{ env.TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ github.ref }}
