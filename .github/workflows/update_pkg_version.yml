@@ -33,6 +33,7 @@ jobs:
     with:
       command-type: ${{ github.event.inputs.version-type }}
   publish_pkg:
-    name: Publish package
-    uses: ./.github/workflows/publish_pkg.yml
     if: ${{ github.event.inputs.publish-pkg }}
+    name: Publish package
+    needs: update_pkg_version
+    uses: ./.github/workflows/publish_pkg.yml
