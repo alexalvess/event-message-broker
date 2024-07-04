@@ -38,6 +38,8 @@ jobs:
           else
             npm version prepatch --preid=beta --no-git-tag-version
           fi
+        elif [[ "${{ github.event.inputs.version-type }}" == "downgrade" ]]; then
+          npm version ${{ env.previousVersion }}
         else
           echo "Invalid version choice: ${{ github.event.inputs.version-type }}"
           exit 1
