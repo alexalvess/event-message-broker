@@ -1,4 +1,4 @@
-name: Update package version
+name: Update package version - Template
 
 on:
   workflow_call:
@@ -65,4 +65,4 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.head_ref }}
+        branch: ${{ github.ref }}
