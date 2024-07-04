@@ -22,6 +22,7 @@ jobs:
     name: Update package - Manual
     uses: ./.github/workflows/update_pkg.yml
     with:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
       version-command: |
         if [[ "${{ github.event.inputs.version-type }}" == "patch" ]]; then
           npm version patch --no-git-tag-version

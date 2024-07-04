@@ -6,6 +6,9 @@ on:
       version-command:
         required: true
         type: string
+      github-token:
+        required: true
+        type: string
 
 jobs:
   update_pkg_version:
@@ -64,5 +67,5 @@ jobs:
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ inputs.github-token }}
         branch: ${{ github.ref }}
