@@ -5,6 +5,7 @@ on:
     inputs:
       version-type:
         description: "Choose version type"
+        type: choice
         required: true
         default: "patch"
         options:
@@ -12,6 +13,7 @@ on:
           - minor
           - major
           - beta
+          - downgrade
 
 
 permissions:
