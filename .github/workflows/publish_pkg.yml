@@ -7,6 +7,11 @@ on:
     branches:
       - '**'
 
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   # create_tag_and_release:
   #   if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
@@ -94,6 +99,9 @@ jobs:
         node-version: "lts/*"
         registry-url: "https://registry.npmjs.org"
 
+    - name: Set up npm authentication
+      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
+
     - name: Install latest NPM
       run: npm install -g npm@latest
 
@@ -102,13 +110,6 @@ jobs:
 
     - name: Build Package
       run: npm run build
-    
-    # - name: Set up npm authentication
-    #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
 
     - name: Publish to NPM
-      run: npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npm publish --access public
