@@ -85,22 +85,17 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: "lts/*"
-        registry-url: "https://registry.npmjs.org"
+        registry-url: 'https://registry.npmjs.org'
 
     - name: Pull changes
       run: |
         git fetch
         git pull
-
-    # - name: Set up npm authentication
-    #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
 
     - name: Install latest NPM
       run: npm install -g npm@latest
@@ -112,6 +107,6 @@ jobs:
       run: npm run build
 
     - name: Publish to NPM
-      run: npm publish --access public
+      run: npm publish --provenance --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
