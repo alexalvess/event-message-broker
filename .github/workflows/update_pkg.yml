@@ -116,7 +116,15 @@ jobs:
         git commit -m "Update Version Package"
 
     - name: Push changes
+      if: github.event_name != 'pull_request'
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.event_name == 'pull_request' ? github.head_ref : github.ref }}
+        branch: ${{ github.ref }}
+
+    - name: Push changes
+      if: github.event_name == 'pull_request'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.head_ref }}
