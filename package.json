@@ -1,6 +1,6 @@
 {
   "name": "event-message-broker",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "previousVersions": [
     "1.0.18",
     "1.0.19",
@@ -9,7 +9,8 @@
     "1.0.22",
     "1.0.23",
     "1.0.24",
-    "1.0.25"
+    "1.0.25",
+    "1.0.26"
   ],
   "description": "",
   "main": "src/index.js",
