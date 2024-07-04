@@ -103,8 +103,8 @@ jobs:
     - name: Build Package
       run: npm run build
     
-    - name: Set up npm authentication
-      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
+    # - name: Set up npm authentication
+    #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
 
     - name: Publish to NPM
       run: npm publish
