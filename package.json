@@ -1,26 +1,14 @@
 {
   "name": "event-message-broker",
-  "version": "1.0.34",
-  "previousVersions": [
-    "1.0.18",
-    "1.0.19",
-    "1.0.20",
-    "1.0.21",
-    "1.0.22",
-    "1.0.23",
-    "1.0.24",
-    "1.0.25",
-    "1.0.26",
-    "1.0.27",
-    "1.0.28",
-    "1.0.29",
-    "1.0.30",
-    "1.0.31",
-    "1.0.32",
-    "1.0.33"
+  "description": "A Message Bus that uses AWS Stack and RabbitMQ",
+  "version": "1.0.15",
+  "previousVersions": [],
+  "main": "./build/cjs/index.js",
+  "types": "./build/types/index.d.ts",
+  "module": "./build/es/index.js",
+  "files": [
+    "build/**/*"
   ],
-  "description": "",
-  "main": "src/index.js",
   "scripts": {
     "build:clean": "rm -rf ./build",
     "build:esm": "tsc -p ./tsconfig.esm.json",
@@ -31,7 +19,7 @@
   },
   "author": {
     "name": "Alex Alves",
-    "url": "https://www.linkedin.com/in/alexalvess/"
+    "url": "https://github.com/alexalvess"
   },
   "license": "MIT",
   "repository": {
