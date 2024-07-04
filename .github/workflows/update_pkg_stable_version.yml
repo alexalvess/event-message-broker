@@ -2,7 +2,7 @@ name: Update package - stable version
 
 on:
   pull_request:
-    types: [opened, syncronized, reopened]
+    types: [opened, synchronize, reopened]
     branches:
       - main
 
