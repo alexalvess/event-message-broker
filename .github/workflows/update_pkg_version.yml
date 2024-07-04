@@ -5,6 +5,11 @@ on:
     branches-ignore:
       - main
     inputs:
+      publish-pkg:
+        description: Publish Package
+        type: boolean
+        default: false
+        required: true
       version-type:
         description: "Choose version type"
         type: choice
@@ -22,8 +27,12 @@ permissions:
   packages: write
 
 jobs:
-  update_pkg_stable_version:
+  update_pkg_version:
     name: Update package - Manual
     uses: ./.github/workflows/update_pkg.yml
     with:
       command-type: ${{ github.event.inputs.version-type }}
+  publish_pkg:
+    name: Publish package
+    uses: ./.github/workflows/publish_pkg.yml
+    if: ${{ github.event.inputs.publish-pkg }}
