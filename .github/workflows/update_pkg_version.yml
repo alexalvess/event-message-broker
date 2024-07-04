@@ -32,6 +32,12 @@ jobs:
           npm version minor --no-git-tag-version
         elif [[ "${{ github.event.inputs.version-type }}" == "major" ]]; then
           npm version major --no-git-tag-version
+        elif [[ "${{ github.event.inputs.version-type }}" == "beta" ]]; then
+          if [ "${{ env.is_beta }}" == "true" ]; then
+            npm version prerelease --preid=beta --no-git-tag-version
+          else
+            npm version prepatch --preid=beta --no-git-tag-version
+          fi
         else
           echo "Invalid version choice: ${{ github.event.inputs.version-type }}"
           exit 1
