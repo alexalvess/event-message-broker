@@ -17,10 +17,10 @@ jobs:
   update_pkg_version:
     name: Update Version
     runs-on: ubuntu-latest
-    output:
-      is_beta: ${{ steps.check_version.outputs.is_beta }}
-      version: ${{ steps.extract_version.outputs.version }}
-      previousVersion: ${{ steps.extract_previous_version.outputs.previousVersion }}
+    # output:
+    #   is_beta: ${{ steps.check_version.outputs.is_beta }}
+    #   version: ${{ steps.extract_version.outputs.version }}
+    #   previousVersion: ${{ steps.extract_previous_version.outputs.previousVersion }}
 
     steps:
     - name: Checkout Repository
