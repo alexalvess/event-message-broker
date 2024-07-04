@@ -42,6 +42,7 @@ jobs:
           echo "is_beta=true" >> $GITHUB_ENV
         else
           echo "is_beta=false" >> $GITHUB_ENV
+        fi
     
     - name: Save Current Version
       run: node -e "const fs = require('fs'); let pkg = JSON.parse(fs.readFileSync('./package.json')); pkg['previousVersion'] = '${{ env.version }}'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"

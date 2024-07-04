@@ -1,4 +1,4 @@
-name: Update package - manual version
+name: Update package - downgrade version
 
 on:
   pull_request:
