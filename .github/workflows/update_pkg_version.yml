@@ -33,13 +33,11 @@ jobs:
         elif [[ "${{ github.event.inputs.version-type }}" == "major" ]]; then
           npm version major --no-git-tag-version
         elif [[ "${{ github.event.inputs.version-type }}" == "beta" ]]; then
-          if [ "${{ env.is_beta }}" == "true" ]; then
+          if [ "${{ needs.update_pkg_stable_version.outputs.is_beta }}" == "true" ]; then
             npm version prerelease --preid=beta --no-git-tag-version
           else
             npm version prepatch --preid=beta --no-git-tag-version
           fi
-        elif [[ "${{ github.event.inputs.version-type }}" == "downgrade" ]]; then
-          npm version ${{ env.previousVersion }}
         else
           echo "Invalid version choice: ${{ github.event.inputs.version-type }}"
           exit 1

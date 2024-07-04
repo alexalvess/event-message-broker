@@ -6,11 +6,15 @@ on:
       version-command:
         required: true
         type: string
+    output:
+      is_beta: ${{ jobs.update_pkg_version.outputs.is_beta }}
 
 jobs:
   update_pkg_version:
     name: Update Version
     runs-on: ubuntu-latest
+    outputs:
+      is_beta: ${{ steps.check_version.outputs.is_beta }}
 
     steps:
     - name: Checkout Repository
@@ -39,9 +43,9 @@ jobs:
       id: check_version
       run: |
         if [[ "${{ env.version }}" == *"beta"* ]]; then
-          echo "is_beta=true" >> $GITHUB_ENV
+          echo "is_beta=true" >> $GITHUB_OUTPUT
         else
-          echo "is_beta=false" >> $GITHUB_ENV
+          echo "is_beta=false" >> $GITHUB_OUTPUT
         fi
     
     - name: Save Current Version
