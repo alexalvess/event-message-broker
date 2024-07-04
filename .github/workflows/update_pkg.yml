@@ -43,28 +43,6 @@ jobs:
         else
           echo "is_beta=false" >> $GITHUB_ENV
         fi
-    
-    - name: Save Current Version
-      run: |
-        node -e "
-        const fs = require('fs');
-        const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
-        
-        const newPkg = {};
-        Object.keys(pkg).forEach(key => {
-          newPkg[key] = pkg[key];
-          if (key === 'version') {
-            if (!pkg.previousVersions) {
-              newPkg.previousVersions = [];
-            } else {
-              newPkg.previousVersions = pkg.previousVersions;
-            }
-            newPkg.previousVersions.push('${{ env.version }}');
-          }
-        });
-        
-        fs.writeFileSync('./package.json', JSON.stringify(newPkg, null, 2));
-        "
 
     - name: Extract package pervious version
       id: extract_previous_version
@@ -86,7 +64,46 @@ jobs:
           else
             npm version prepatch --preid=beta --no-git-tag-version
           fi
+        elif [[ "${{ inputs.command-type }}" == "downgrade" ]]; then
+          npm version ${{ env.previousVersion }}
         fi
+
+    - name: Remove last item from previousVersions
+      if: ${{ inputs.command-type == 'downgrade' }}
+      run: |
+        node -e "
+        const fs = require('fs');
+        const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+        
+        if (pkg.previousVersions && pkg.previousVersions.length > 0) {
+          pkg.previousVersions.pop(); // Remove last item
+        }
+        
+        fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+        "
+
+    - name: Save Current Version
+      if: ${{ inputs.command-type != 'downgrade' }}
+      run: |
+        node -e "
+        const fs = require('fs');
+        const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+        
+        const newPkg = {};
+        Object.keys(pkg).forEach(key => {
+          newPkg[key] = pkg[key];
+          if (key === 'version') {
+            if (!pkg.previousVersions) {
+              newPkg.previousVersions = [];
+            } else {
+              newPkg.previousVersions = pkg.previousVersions;
+            }
+            newPkg.previousVersions.push('${{ env.version }}');
+          }
+        });
+        
+        fs.writeFileSync('./package.json', JSON.stringify(newPkg, null, 2));
+        "
 
     - name: Commit changes
       run: |
