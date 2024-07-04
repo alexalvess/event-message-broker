@@ -22,11 +22,11 @@ jobs:
       - name: Identifying the type
         id: determine_version
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/fix/"* ]]; then
+          if [[ "${{ github.head_ref }}" == "refs/heads/fix/"* ]]; then
             echo "version_type=patch" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref }}" == "refs/heads/feature/"* ]]; then
+          elif [[ "${{ github.head_ref }}" == "refs/heads/feature/"* ]]; then
             echo "version_type=minor" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref }}" == "refs/heads/release/"* || "${{ github.ref }}" == "refs/heads/major/"* ]]; then
+          elif [[ "${{ github.head_ref }}" == "refs/heads/release/"* || "${{ github.ref }}" == "refs/heads/major/"* ]]; then
             echo "version_type=major" >> $GITHUB_OUTPUT
           else
             echo "Branch not recognized for automatic versioning."
