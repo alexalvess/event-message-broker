@@ -2,7 +2,7 @@ name: Update package - stable version
 
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, syncronized, reopened]
     branches:
       - main
 
@@ -12,17 +12,21 @@ permissions:
 
 jobs:
   update_pkg_stable_version:
-    name: Update package - Stable Version
-    uses: ./.github/workflows/update_pkg.yml
-    with:
-      command-type: |
-        if [[ "${{ github.head_ref }}" == "fix/"* ]]; then
-          'patch'
-        elif [[ '${{ github.head_ref }}" == "feature/"* ]]; then
-          'minor'
-        elif [[ "${{ github.head_ref }}" == "release/"* || "${{ github.head_ref }}" == "major/"* ]]; then
-          'major'
+    - name: Determine version type
+      id: determine_version
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/fix/"* ]]; then
+          echo "version_type=patch" >> $GITHUB_ENV
+        elif [[ "${{ github.ref }}" == "refs/heads/feature/"* ]]; then
+          echo "version_type=minor" >> $GITHUB_ENV
+        elif [[ "${{ github.ref }}" == "refs/heads/release/"* || "${{ github.ref }}" == "refs/heads/major/"* ]]; then
+          echo "version_type=major" >> $GITHUB_ENV
         else
           echo "Branch not recognized for automatic versioning."
           exit 1
         fi
+
+    name: Update package - Stable Version
+    uses: ./.github/workflows/update_pkg.yml
+    with:
+      command-type: ${{ env.version_type }}
