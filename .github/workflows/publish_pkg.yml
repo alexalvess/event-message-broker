@@ -99,6 +99,11 @@ jobs:
         node-version: "lts/*"
         registry-url: "https://registry.npmjs.org"
 
+    - name: Pull changes
+      run: |
+        git fetch
+        git pull
+
     - name: Set up npm authentication
       run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
 
