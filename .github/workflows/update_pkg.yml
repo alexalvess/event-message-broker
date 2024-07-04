@@ -57,11 +57,21 @@ jobs:
         node -e "
         const fs = require('fs');
         const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
-        if (!pkg.previousVersions) {
-          pkg.previousVersions = [];
-        }
-        pkg.previousVersions.push('${{ env.version }}');
-        fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+        
+        const newPkg = {};
+        Object.keys(pkg).forEach(key => {
+          newPkg[key] = pkg[key];
+          if (key === 'version') {
+            if (!pkg.previousVersions) {
+              newPkg.previousVersions = [];
+            } else {
+              newPkg.previousVersions = pkg.previousVersions;
+            }
+            newPkg.previousVersions.push('${{ env.version }}');
+          }
+        });
+        
+        fs.writeFileSync('./package.json', JSON.stringify(newPkg, null, 2));
         "
 
     - name: Extract package pervious version

@@ -71,6 +71,5 @@
     "sns",
     "eventBridge",
     "rabbitmq"
-  ],
-  "previousVersion": "1.0.17"
+  ]
 }
