@@ -8,7 +8,7 @@ on:
       publish-pkg:
         description: Publish Package
         type: boolean
-        default: true
+        default: false
         required: true
       version-type:
         description: "Choose version type"

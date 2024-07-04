@@ -43,6 +43,11 @@ jobs:
           echo "exists=false" >> $GITHUB_ENV
         fi
 
+    - name: Pull changes
+      run: |
+        git fetch
+        git pull
+
     - name: Create tag
       if: env.exists == 'false'
       run: git tag -a v${{ steps.version.outputs.version }} -m "Version ${{ steps.version.outputs.version }}"
