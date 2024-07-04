@@ -14,17 +14,20 @@ jobs:
   determine_version_type:
     name: Determine version type
     runs-on: ubuntu-latest
+
+    outputs:
+      version_type: ${{ steps.determine_version.outputs.version_type }}
     
     steps:
       - name: Identifying the type
         id: determine_version
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/fix/"* ]]; then
-            echo "version_type=patch" >> $GITHUB_ENV
+            echo "version_type=patch" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/feature/"* ]]; then
-            echo "version_type=minor" >> $GITHUB_ENV
+            echo "version_type=minor" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/release/"* || "${{ github.ref }}" == "refs/heads/major/"* ]]; then
-            echo "version_type=major" >> $GITHUB_ENV
+            echo "version_type=major" >> $GITHUB_OUTPUT
           else
             echo "Branch not recognized for automatic versioning."
             exit 1
@@ -35,4 +38,4 @@ jobs:
     needs: determine_version_type
     uses: ./.github/workflows/update_pkg.yml
     with:
-      command-type: ${{ env.version_type }}
+      command-type: ${{ needs.determine_version_type.outputs.version_type }}
