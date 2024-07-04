@@ -99,8 +99,8 @@ jobs:
         git fetch
         git pull
 
-    - name: Set up npm authentication
-      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
+    # - name: Set up npm authentication
+    #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
 
     - name: Install latest NPM
       run: npm install -g npm@latest
@@ -112,7 +112,6 @@ jobs:
       run: npm run build
 
     - name: Publish to NPM
-      run: npm publish
+      run: npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
