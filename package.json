@@ -1,6 +1,6 @@
 {
   "name": "event-message-broker",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "",
   "main": "src/index.js",
   "scripts": {
@@ -71,5 +71,6 @@
     "sns",
     "eventBridge",
     "rabbitmq"
-  ]
+  ],
+  "previousVersion": "1.0.12"
 }
