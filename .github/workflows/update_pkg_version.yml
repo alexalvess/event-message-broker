@@ -15,7 +15,8 @@ on:
 
 
 permissions:
-  contents: read
+  contents: write
+  packages: write
 
 jobs:
   update_pkg_stable_version:
