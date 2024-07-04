@@ -3,22 +3,14 @@ name: Update package version - Template
 on:
   workflow_call:
     inputs:
-      version-command:
+      command-type:
         required: true
         type: string
-    outputs:
-      is_beta:
-        value: ${{ jobs.update_pkg_version.outputs.is_beta }}
-      previous_version:
-        value: ${{ jobs.update_pkg_version.outputs.previous_version }}
 
 jobs:
   update_pkg_version:
     name: Update Version
     runs-on: ubuntu-latest
-    outputs:
-      is_beta: ${{ steps.check_version.outputs.is_beta }}
-      previous_version: ${{ env.previousVersion }}
 
     steps:
     - name: Checkout Repository
@@ -47,9 +39,9 @@ jobs:
       id: check_version
       run: |
         if [[ "${{ env.version }}" == *"beta"* ]]; then
-          echo "is_beta=true" >> $GITHUB_OUTPUT
+          echo "is_beta=true" >> $GITHUB_ENV
         else
-          echo "is_beta=false" >> $GITHUB_OUTPUT
+          echo "is_beta=false" >> $GITHUB_ENV
         fi
     
     - name: Save Current Version
@@ -81,7 +73,20 @@ jobs:
         echo "previousVersion=${previousVersion}" >> $GITHUB_ENV
 
     - name: Patch Version Package
-      run: ${{ inputs.version-command }}
+      run: |
+        if [[ "${{ inputs.command-type }}" == "patch" ]]; then
+          npm version patch --no-git-tag-version
+        elif [[ "${{ inputs.command-type }}" == "minor" ]]; then
+          npm version minor --no-git-tag-version
+        elif [[ "${{ inputs.command-type }}" == "major" ]]; then
+          npm version major --no-git-tag-version
+        elif [[ "${{ inputs.command-type }}" == "beta" ]]; then
+          if [ "${{ env.is_beta }}" == "true" ]; then
+            npm version prerelease --preid=beta --no-git-tag-version
+          else
+            npm version prepatch --preid=beta --no-git-tag-version
+          fi
+        fi
 
     - name: Commit changes
       run: |
