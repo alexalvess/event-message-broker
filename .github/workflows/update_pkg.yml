@@ -7,7 +7,8 @@ on:
         required: true
         type: string
     outputs:
-      is_beta: ${{ jobs.update_pkg_version.outputs.is_beta }}
+      is_beta:
+        value: ${{ jobs.update_pkg_version.outputs.is_beta }}
 
 jobs:
   update_pkg_version:
