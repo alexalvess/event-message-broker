@@ -11,22 +11,28 @@ permissions:
   packages: write
 
 jobs:
-  update_pkg_stable_version:
-    - name: Determine version type
-      id: determine_version
-      run: |
-        if [[ "${{ github.ref }}" == "refs/heads/fix/"* ]]; then
-          echo "version_type=patch" >> $GITHUB_ENV
-        elif [[ "${{ github.ref }}" == "refs/heads/feature/"* ]]; then
-          echo "version_type=minor" >> $GITHUB_ENV
-        elif [[ "${{ github.ref }}" == "refs/heads/release/"* || "${{ github.ref }}" == "refs/heads/major/"* ]]; then
-          echo "version_type=major" >> $GITHUB_ENV
-        else
-          echo "Branch not recognized for automatic versioning."
-          exit 1
-        fi
+  determine_version_type:
+    name: Determine version type
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Identifying the type
+        id: determine_version
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/fix/"* ]]; then
+            echo "version_type=patch" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == "refs/heads/feature/"* ]]; then
+            echo "version_type=minor" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == "refs/heads/release/"* || "${{ github.ref }}" == "refs/heads/major/"* ]]; then
+            echo "version_type=major" >> $GITHUB_ENV
+          else
+            echo "Branch not recognized for automatic versioning."
+            exit 1
+          fi
 
+  update_pkg_stable_version:
     name: Update package - Stable Version
+    needs: determine_version_type
     uses: ./.github/workflows/update_pkg.yml
     with:
       command-type: ${{ env.version_type }}
