@@ -7,11 +7,12 @@ on:
       - '**'
 
 permissions:
-  contents: read
+  contents: write
+  packages: write
 
 jobs:
   downgrade_pkg_version:
     if: ${{ github.event.pull_request.merged == false }}
-    uses: ./update_pkg.yml
+    uses: ./.github/workflows/update_pkg.yml
     with:
-      version-command: npm version ${{ needs.downgrade_pkg_version.outputs.previousVersion }}
+      command-type: 'downgrade'

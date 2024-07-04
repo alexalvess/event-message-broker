@@ -7,20 +7,21 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
+  packages: write
 
 jobs:
   update_pkg_stable_version:
     name: Update package - Stable Version
-    uses: ./update_pkg.yml
+    uses: ./.github/workflows/update_pkg.yml
     with:
-      version-command: |
+      command-type: |
         if [[ "${{ github.head_ref }}" == "fix/"* ]]; then
-          npm version patch --no-git-tag-version
-        elif [[ "${{ github.head_ref }}" == "feature/"* ]]; then
-          npm version minor --no-git-tag-version
+          'patch'
+        elif [[ '${{ github.head_ref }}" == "feature/"* ]]; then
+          'minor'
         elif [[ "${{ github.head_ref }}" == "release/"* || "${{ github.head_ref }}" == "major/"* ]]; then
-          npm version major --no-git-tag-version
+          'major'
         else
           echo "Branch not recognized for automatic versioning."
           exit 1
