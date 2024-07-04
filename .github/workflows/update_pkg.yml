@@ -9,6 +9,8 @@ on:
     outputs:
       is_beta:
         value: ${{ jobs.update_pkg_version.outputs.is_beta }}
+      previous_version:
+        value: ${{ jobs.update_pkg_version.outputs.previous_version }}
 
 jobs:
   update_pkg_version:
@@ -16,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       is_beta: ${{ steps.check_version.outputs.is_beta }}
+      previous_version: ${{ env.previousVersion }}
 
     steps:
     - name: Checkout Repository

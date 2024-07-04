@@ -15,7 +15,6 @@ on:
           - beta
           - downgrade
 
-
 permissions:
   contents: write
   packages: write
@@ -38,7 +37,6 @@ jobs:
           else
             npm version prepatch --preid=beta --no-git-tag-version
           fi
-        else
-          echo "Invalid version choice: ${{ github.event.inputs.version-type }}"
-          exit 1
+        elif [[ "${{ github.event.inputs.version-type }}" == "downgrade" ]]; then
+          npm version ${{ needs.update_pkg_stable_version.outputs.previous_version }}
         fi
