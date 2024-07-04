@@ -10,7 +10,7 @@ on:
 jobs:
   create_tag_and_release:
     runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_call' }}
+    if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_call' }}
 
     steps:
     - name: Checkout code
