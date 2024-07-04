@@ -39,4 +39,14 @@ jobs:
           fi
         elif [[ "${{ github.event.inputs.version-type }}" == "downgrade" ]]; then
           npm version ${{ needs.update_pkg_stable_version.outputs.previous_version }}
+
+          node -e "
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+          
+          if (pkg.previousVersions && pkg.previousVersions.length > 0) {
+            pkg.previousVersions.pop(); // Remove last item
+          }
+          
+          fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
         fi
