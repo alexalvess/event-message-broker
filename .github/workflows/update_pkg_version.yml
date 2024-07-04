@@ -8,7 +8,7 @@ on:
       publish-pkg:
         description: Publish Package
         type: boolean
-        default: false
+        default: true
         required: true
       version-type:
         description: "Choose version type"
@@ -33,7 +33,7 @@ jobs:
     with:
       command-type: ${{ github.event.inputs.version-type }}
   publish_pkg:
-    if: ${{ github.event.inputs.publish-pkg }}
+    if: ${{ github.event.inputs.publish-pkg == true }}
     name: Publish package
     needs: update_pkg_version
     uses: ./.github/workflows/publish_pkg.yml
