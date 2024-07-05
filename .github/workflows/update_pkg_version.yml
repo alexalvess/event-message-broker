@@ -2,8 +2,8 @@ name: Update package - manual version
 
 on:
   workflow_dispatch:
-    branches-ignore:
-      - main
+    branches:
+      - '**'
     inputs:
       publish-pkg:
         description: Publish Package
@@ -14,7 +14,7 @@ on:
         description: "Choose version type"
         type: choice
         required: true
-        default: "patch"
+        default: "beta"
         options:
           - patch
           - minor
@@ -25,13 +25,26 @@ on:
 permissions:
   contents: write
   packages: write
+  pull-requests: write
+  administration: write
 
 jobs:
+  request_approval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request approval
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: manual-approval
+
   update_pkg_version:
     name: Update package - Manual
+    needs: request_approval
     uses: ./.github/workflows/update_pkg.yml
     with:
       command-type: ${{ github.event.inputs.version-type }}
+
   publish_pkg:
     name: Publish package
     needs: update_pkg_version
