@@ -1,7 +1,7 @@
 {
   "name": "event-message-broker",
   "description": "A Message Bus that uses AWS Stack and RabbitMQ",
-  "version": "1.0.27-beta.0",
+  "version": "1.1.0",
   "previousVersions": [
     "1.0.15",
     "1.0.16",
@@ -14,7 +14,8 @@
     "1.0.23",
     "1.0.24",
     "1.0.25",
-    "1.0.26"
+    "1.0.26",
+    "1.0.27-beta.0"
   ],
   "main": "./build/cjs/index.js",
   "types": "./build/types/index.d.ts",
