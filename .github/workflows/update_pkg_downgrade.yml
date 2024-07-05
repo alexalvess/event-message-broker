@@ -5,10 +5,8 @@ on:
     types: [closed]
     branches:
       - release/**
-      - major/**
       - feature/**
       - fix/**
-      - hotfix/**
       - main
 
 permissions:

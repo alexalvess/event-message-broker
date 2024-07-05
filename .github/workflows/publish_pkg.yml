@@ -5,7 +5,10 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - '**'
+      - release/**
+      - feature/**
+      - fix/**
+      - main
 
 jobs:
   create_tag_and_release:

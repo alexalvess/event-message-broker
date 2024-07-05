@@ -5,10 +5,8 @@ on:
     types: [opened, reopened]
     branches:
       - release/**
-      - major/**
       - feature/**
       - fix/**
-      - hotfix/**
 
 permissions:
   contents: write
