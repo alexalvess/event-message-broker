@@ -28,18 +28,50 @@ permissions:
   pull-requests: write
 
 jobs:
-  request_approval:
+  create_pull_request:
     runs-on: ubuntu-latest
     steps:
-      - name: Request approval
-        uses: peter-evans/repository-dispatch@v1
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create a new branch
+        run: |
+          git checkout -b temp/approval-branch
+
+      - name: Commit changes
+        run: |
+          git commit --allow-empty -m "Requesting approval"
+
+      - name: Push the branch
+        run: |
+          git push origin temp/approval-branch
+
+      - name: Create Pull Request
+        id: create_pr
+        uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: manual-approval
+          title: "Update Version - Approval Required"
+          body: "This version update is being done manually and requires approval"
+          head: temp/approval-branch
+          base: ${{ github.ref }}
+
+  wait_for_approval:
+    needs: create_pull_request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Wait for PR approval and merge
+        uses: stil4m/wait-for-pull-request-merge-action@v1
+        with:
+          pull-request: ${{ needs.create_pull_request.outputs.pull_request_number }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
   update_pkg_version:
     name: Update package - Manual
-    needs: request_approval
+    needs: wait_for_approval
     uses: ./.github/workflows/update_pkg.yml
     with:
       command-type: ${{ github.event.inputs.version-type }}
