@@ -32,9 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: approved
-        env: 
-          ENV_NAME: Staging
-        run: write-host "Approve for $($env.ENV_NAME)"
+        run: echo "Approve for manual-deploy"
 
   update_pkg_version:
     name: Update package - Manual
