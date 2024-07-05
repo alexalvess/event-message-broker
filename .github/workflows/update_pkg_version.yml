@@ -27,10 +27,19 @@ permissions:
   contents: read
 
 jobs:
+  approval-gate:
+    environment: manual-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: approved
+        env: 
+          ENV_NAME: Staging
+        run: write-host "Approve for $($env.ENV_NAME)"
+
   update_pkg_version:
     name: Update package - Manual
+    needs: approval-gate
     uses: ./.github/workflows/update_pkg.yml
-    environment: 'manual-deploy'
     with:
       command-type: ${{ github.event.inputs.version-type }}
 
