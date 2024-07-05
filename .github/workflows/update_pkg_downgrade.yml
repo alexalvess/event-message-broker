@@ -4,7 +4,10 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - '**'
+      - release/**
+      - feature/**
+      - fix/**
+      - main
 
 permissions:
   contents: write

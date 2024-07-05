@@ -3,8 +3,10 @@ name: Update package - beta version
 on:
   pull_request:
     types: [opened, reopened]
-    branches-ignore:
-      - main
+    branches:
+      - release/**
+      - feature/**
+      - fix/**
 
 permissions:
   contents: write

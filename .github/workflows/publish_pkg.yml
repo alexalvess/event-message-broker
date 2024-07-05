@@ -5,11 +5,14 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - '**'
+      - release/**
+      - feature/**
+      - fix/**
+      - main
 
 jobs:
   create_tag_and_release:
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true && (startsWith(github.head_ref, 'feature/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'release/')) }}
     runs-on: ubuntu-latest
 
     steps:
