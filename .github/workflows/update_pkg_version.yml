@@ -26,7 +26,6 @@ permissions:
   contents: write
   packages: write
   pull-requests: write
-  administration: write
 
 jobs:
   request_approval:
