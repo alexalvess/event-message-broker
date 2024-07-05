@@ -30,9 +30,13 @@ jobs:
   update_pkg_version:
     name: Update package - Manual
     environment: 'manual-deploy'
-    uses: ./.github/workflows/update_pkg.yml
-    with:
-      command-type: ${{ github.event.inputs.version-type }}
+    runs-on: ubuntu-latest
+
+    steps:
+      -name: Update Package Version
+      uses: ./.github/workflows/update_pkg.yml
+      with:
+        command-type: ${{ github.event.inputs.version-type }}
 
   publish_pkg:
     name: Publish package
