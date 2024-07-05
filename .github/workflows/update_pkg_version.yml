@@ -51,28 +51,28 @@ jobs:
         run: |
           git push origin temp/approval-branch
 
-      - name: Create Pull Request
-        id: create_pr
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Update Version - Approval Required"
-          body: "This version update is being done manually and requires approval"
-          head: temp/approval-branch
-          base: ${{ github.ref }}
+      - name: create pull request
+        run: |
+          gh pr create \ 
+            -B temp/approval-branch \
+            -H ${{ github.ref }} \
+            --title 'Merge branch_to_merge into base_branch' \
+            --body 'Created by Github action'
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   wait_for_approval:
     needs: create_pull_request
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
       - name: Wait for PR approval and merge
-        uses: stil4m/wait-for-pull-request-merge-action@v1
+        uses: peter-evans/wait-for-check@v2
         with:
-          pull-request: ${{ needs.create_pull_request.outputs.pull_request_number }}
+          ref: ${{ github.ref }}
+          check-name: Approval Required
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          interval-seconds: 60
+          timeout-seconds: 3600
 
   update_pkg_version:
     name: Update package - Manual
