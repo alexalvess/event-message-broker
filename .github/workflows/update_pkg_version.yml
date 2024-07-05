@@ -2,8 +2,8 @@ name: Update package - manual version
 
 on:
   workflow_dispatch:
-    branches:
-      - '**'
+    branches-ignore:
+      - main
     inputs:
       publish-pkg:
         description: Publish Package
@@ -23,60 +23,13 @@ on:
           - downgrade
 
 permissions:
-  contents: write
-  packages: write
-  pull-requests: write
+  id-token: write
+  contents: read
 
 jobs:
-  create_pull_request:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Configure Git credentials
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-
-      - name: Create a new branch
-        run: |
-          git checkout -b temp/approval-branch
-
-      - name: Commit changes
-        run: |
-          git commit --allow-empty -m "Requesting approval"
-
-      - name: Push the branch
-        run: |
-          git push origin temp/approval-branch
-
-      - name: create pull request
-        run: |
-          gh pr create \ 
-            -B temp/approval-branch \
-            -H ${{ github.ref }} \
-            --title 'Merge branch_to_merge into base_branch' \
-            --body 'Created by Github action'
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  wait_for_approval:
-    needs: create_pull_request
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait for PR approval and merge
-        uses: peter-evans/wait-for-check@v2
-        with:
-          ref: ${{ github.ref }}
-          check-name: Approval Required
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          interval-seconds: 60
-          timeout-seconds: 3600
-
   update_pkg_version:
     name: Update package - Manual
-    needs: wait_for_approval
+    environment: 'manual-deploy'
     uses: ./.github/workflows/update_pkg.yml
     with:
       command-type: ${{ github.event.inputs.version-type }}
