@@ -29,14 +29,10 @@ permissions:
 jobs:
   update_pkg_version:
     name: Update package - Manual
+    uses: ./.github/workflows/update_pkg.yml
     environment: 'manual-deploy'
-    runs-on: ubuntu-latest
-
-    steps:
-      -name: Update Package Version
-      uses: ./.github/workflows/update_pkg.yml
-      with:
-        command-type: ${{ github.event.inputs.version-type }}
+    with:
+      command-type: ${{ github.event.inputs.version-type }}
 
   publish_pkg:
     name: Publish package
